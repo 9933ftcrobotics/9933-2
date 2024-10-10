@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 
 @TeleOp
 public class MainDrive extends LinearOpMode {
@@ -29,6 +30,10 @@ public class MainDrive extends LinearOpMode {
                 new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312),
                 new Motor(hardwareMap, "rightRear", Motor.GoBILDA.RPM_312),
                 new RevIMU(hardwareMap)
+        );
+
+        ArmSubsystem arm = new ArmSubsystem(
+                new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312)
         );
 
         // This is the built-in IMU in the REV hub.
@@ -59,6 +64,17 @@ public class MainDrive extends LinearOpMode {
         while (!isStopRequested()) {
 
             drive.drive(driverOp.getLeftX(), driverOp.getLeftY(), driverOp.getRightX(), true);
+
+            if (driverOp.getButton(GamepadKeys.Button.B)) {
+                arm.setArm(600);
+                telemetry.addLine("B is pressed");
+            } else {
+                arm.setArm(200);
+            }
+            telemetry.addData("ArmPos", arm.ArmCurrent());
+            telemetry.addData("Target", arm.TargetArm());
+            telemetry.update();
+
 
         }
     }

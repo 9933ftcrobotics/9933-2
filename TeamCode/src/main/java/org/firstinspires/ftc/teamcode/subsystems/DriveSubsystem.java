@@ -102,12 +102,14 @@ public class DriveSubsystem extends SubsystemBase {
             // optional fifth parameter for squared inputs
             drive.driveFieldCentric(
                     LeftX,
-                    LeftY,
+                    LeftY * -1,
                     RightX,
-                    imu.getRotation2d().getDegrees(),   // gyro value passed in here must be in degrees
-                    false
+                    imu.getRotation2d().getDegrees()
             );
         }
     }
 
+    public void Drive_System_Test(boolean run_leftFront, boolean run_rightFront, boolean run_leftRear, boolean run_rightRear){
+        drive.driveWithMotorPowers((run_leftFront ? 1.0:0.0),(run_rightFront ? 1.0:0.0),(run_leftRear ? 1.0:0.0),(run_rightRear ? 1.0:0.0) );
+    }
 }
