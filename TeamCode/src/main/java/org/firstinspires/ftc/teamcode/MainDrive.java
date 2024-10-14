@@ -1,12 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.RevIMU;
+import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 
@@ -21,6 +26,7 @@ public class MainDrive extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        CommandScheduler.getInstance().run();
         // constructor takes in frontLeft, frontRight, backLeft, backRight motors
         // IN THAT ORDER
 
@@ -34,6 +40,11 @@ public class MainDrive extends LinearOpMode {
 
         ArmSubsystem arm = new ArmSubsystem(
                 new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312)
+        );
+
+        ClawSubsystem claw = new ClawSubsystem(
+                new CRServo(hardwareMap, "grabber"),
+                new SimpleServo(hardwareMap, "wrist", 0,1)
         );
 
         // This is the built-in IMU in the REV hub.
@@ -65,17 +76,39 @@ public class MainDrive extends LinearOpMode {
 
             drive.drive(driverOp.getLeftX(), driverOp.getLeftY(), driverOp.getRightX(), true);
 
+
             if (driverOp.getButton(GamepadKeys.Button.B)) {
                 arm.setArm(600);
-                telemetry.addLine("B is pressed");
             } else {
                 arm.setArm(200);
             }
-            telemetry.addData("ArmPos", arm.ArmCurrent());
-            telemetry.addData("Target", arm.TargetArm());
+
+            if(driverOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                claw.grabberPlace();
+            } else if (driverOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+                claw.grabberPick();
+            } else {
+                claw.grabberStop();
+            }
+
+            if(driverOp.getButton(GamepadKeys.Button.DPAD_LEFT)) {
+                claw.SetWristLeft();
+            } else if (driverOp.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
+                claw.SetWristRight();
+            } else {
+                claw.SetWristCenter();
+            }
+
+            updateTelemetry(drive.getDriveTelemetry());
+            updateTelemetry(arm.getArmTelemetry());
             telemetry.update();
 
 
+        }
+    }
+    public void updateTelemetry(String[] telem) {
+        for (String s : telem) {
+            telemetry.addLine(s);
         }
     }
 
