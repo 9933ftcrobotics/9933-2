@@ -33,10 +33,11 @@ public class SystemTest extends LinearOpMode {
         DriveSubsystem drive = new DriveSubsystem(
                 new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312),
                 new Motor(hardwareMap, "rightFront", Motor.GoBILDA.RPM_312),
-                new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312),
                 new Motor(hardwareMap, "rightRear", Motor.GoBILDA.RPM_312),
+                new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312),
                 new RevIMU(hardwareMap)
         );
+
 
         ArmSubsystem arm = new ArmSubsystem(
                 new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312)

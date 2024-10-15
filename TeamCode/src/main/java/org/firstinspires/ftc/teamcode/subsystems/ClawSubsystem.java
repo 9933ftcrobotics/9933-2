@@ -23,9 +23,9 @@ public class ClawSubsystem extends SubsystemBase {
         wrist.setRange(MIN_ANGLE, MAX_ANGLE);
     }
 
-    public void grabberPlace() { grabber.set(-1); }
+    public void grabberPlace() { grabber.set(1); }
 
-    public void grabberPick() { grabber.set(1); }
+    public void grabberPick() { grabber.set(-1); }
 
     public void grabberStop() { grabber.set(0); }
 

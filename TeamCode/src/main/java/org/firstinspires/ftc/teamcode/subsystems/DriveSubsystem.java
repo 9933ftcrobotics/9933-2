@@ -10,21 +10,20 @@ import com.arcrobotics.ftclib.hardware.motors.Motor.Encoder;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.DifferentialDriveKinematics;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.DifferentialDriveOdometry;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.DifferentialDriveWheelSpeeds;
-import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveWheelSpeeds;
 
 import org.firstinspires.ftc.teamcode.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
 
     private Motor leftFront, rightFront, rightRear, leftRear;
-    private double leftEncoder, rightEncoder, backEncoder;
+    private Encoder leftEncoder, rightEncoder;
     private GyroEx gyro;
     private DifferentialDriveOdometry odometry;
     private DifferentialDriveKinematics kinematics;
-    private final MecanumDrive drive;
+    private MecanumDrive drive;
     private RevIMU imu;
 
-    public DriveSubsystem(Motor leftFront, Motor rightFront,  Motor leftRear,Motor rightRear, RevIMU imu) {
+    public DriveSubsystem(Motor leftFront, Motor rightFront, Motor rightRear, Motor leftRear, RevIMU imu) {
         leftFront.setInverted(true);
         leftRear.setInverted(true);
         rightFront.setInverted(false);
@@ -35,21 +34,17 @@ public class DriveSubsystem extends SubsystemBase {
         this.imu = imu;
         imu.init();
 
-        leftFront.set(0);
-        rightFront.set(0);
-        leftRear.set(0);
-        rightRear.set(0);
-
         kinematics = new DifferentialDriveKinematics(DriveConstants.TRACK_WIDTH);
     }
 
     @Override
     public void periodic() {
-        leftEncoder = leftFront.getCurrentPosition();
-        rightEncoder = leftFront.getCurrentPosition();
-        backEncoder = leftFront.getCurrentPosition();
+        odometry.update(gyro.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance());
     }
 
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
+    }
 
     public Pose2d getCurrentPose() {
         return odometry.getPoseMeters();
@@ -112,22 +107,6 @@ public class DriveSubsystem extends SubsystemBase {
                     imu.getRotation2d().getDegrees()
             );
         }
-    }
-
-    public String[] getDriveTelemetry() {
-        String[] telem = {
-                "Robot Angle:" + String.valueOf((imu.getRotation2d().getDegrees())),
-                "Left Odom Pod: " + String.valueOf(leftEncoder),
-                "Right Odom Pod: " + String.valueOf(rightEncoder),
-                "Back Odom Pod: " + String.valueOf(backEncoder)
-//                "Front Left Pow: " + String.valueOf(leftFront.get()),
-//                "Front Right Pow: " + String.valueOf(rightFront.get()),
-//                "Rear Left Pow: " + String.valueOf(leftRear.get()),
-//                "Rear Right Pow: " + String.valueOf(rightRear.get())
-
-
-        };
-        return telem;
     }
 
     public void Drive_System_Test(boolean run_leftFront, boolean run_rightFront, boolean run_leftRear, boolean run_rightRear){

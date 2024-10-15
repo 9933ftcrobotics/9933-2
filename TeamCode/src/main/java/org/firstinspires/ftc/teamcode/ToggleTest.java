@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 
 @TeleOp
-public class MainDrive extends LinearOpMode {
+public class ToggleTest extends LinearOpMode {
 
     // This variable determines whether the following program
     // uses field-centric or robot-centric driving styles. The
@@ -34,22 +34,7 @@ public class MainDrive extends LinearOpMode {
         // constructor takes in frontLeft, frontRight, backLeft, backRight motors
         // IN THAT ORDER
 
-        DriveSubsystem drive = new DriveSubsystem(
-                new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312),
-                new Motor(hardwareMap, "rightFront", Motor.GoBILDA.RPM_312),
-                new Motor(hardwareMap, "rightRear", Motor.GoBILDA.RPM_312),
-                new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312),
-                new RevIMU(hardwareMap)
-        );
 
-        ArmSubsystem arm = new ArmSubsystem(
-                new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312)
-        );
-
-        ClawSubsystem claw = new ClawSubsystem(
-                new CRServo(hardwareMap, "grabber"),
-                new SimpleServo(hardwareMap, "wrist", 0,1)
-        );
 
         // This is the built-in IMU in the REV hub.
         // We're initializing it by its default parameters
@@ -78,7 +63,7 @@ public class MainDrive extends LinearOpMode {
 
         while (!isStopRequested()) {
 
-            drive.drive(driverOp.getLeftX(), driverOp.getLeftY(), driverOp.getRightX(), true);
+
 
 
             /*if (driverOp.getButton(GamepadKeys.Button.B)) {
@@ -86,7 +71,7 @@ public class MainDrive extends LinearOpMode {
             } else {
                 arm.setArm(200);
             }*/
-
+            telemetry.addData("This is at:", sampleScoring);
             if (driverOp.getButton(GamepadKeys.Button.Y ) && YIsPressed == false) {
                 telemetry.addLine("Y is pressed");
                 if (sampleScoring == true) {
@@ -102,53 +87,6 @@ public class MainDrive extends LinearOpMode {
             if (!driverOp.getButton(GamepadKeys.Button.Y)) {
                 YIsPressed = false;
             }
-
-            if (sampleScoring = true) {
-                if (driverOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-                    arm.setArm(DriveConstants.armSamplePick);
-                    claw.grabberPick();
-                } else if (driverOp.getButton(GamepadKeys.Button.DPAD_UP)) {
-                    arm.setArm(DriveConstants.armSampleScore);
-                    claw.grabberStop();
-                } else {
-                    arm.setArm(DriveConstants.armSampleRest);
-                    claw.grabberStop();
-                }
-
-                claw.SetWristCenter();
-
-                if (driverOp.getButton(GamepadKeys.Button.A)) {
-                    claw.grabberPlace();
-                }
-
-                if (driverOp.getButton(GamepadKeys.Button.B)) {
-                    arm.setArm(DriveConstants.armZero);
-                }
-                telemetry.addLine("Sample Scoring");
-                telemetry.update();
-            }
-
-            if (sampleScoring = false) {
-                if (driverOp.getButton(GamepadKeys.Button.DPAD_LEFT)) {
-                    claw.SetWristLeft();
-                } else if (driverOp.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
-                    claw.SetWristRight();
-                }
-
-                if (driverOp.getButton(GamepadKeys.Button.A)) {
-                    claw.grabberPick();
-                } else if (driverOp.getButton(GamepadKeys.Button.B)) {
-                    claw.grabberPlace();
-                } else {
-                    claw.grabberStop();
-                }
-
-
-                telemetry.addLine("Specimin Scoring");
-                telemetry.update();
-            }
-
-
 
             telemetry.update();
 

@@ -21,7 +21,7 @@ public class ArmSubsystem extends SubsystemBase {
         targetPos = Pos;
         // set the run mode
 
-        PIDController pid = new PIDController(0.01,0,0);
+        PIDController pid = new PIDController(0.005,0,0);
 
 
         // set the tolerance
