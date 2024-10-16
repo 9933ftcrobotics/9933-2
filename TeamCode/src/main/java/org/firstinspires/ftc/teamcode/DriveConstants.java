@@ -17,19 +17,21 @@ public class DriveConstants {
     public static double ZETA = 0.7;
 
 
-    public static int armSamplePick = 1360;
+    public static int armSamplePick = 1350;
     public static int armSampleRest = 1150;
-    public static int armSampleScore = 720;
+    public static int armSampleScore = 790;
 
     public static int armZero = 75;
 
-    public static double wristCenter = 0.4;
-    public static double wristRight = 0.5;
-    public static double wristLeft = 0.3;
+    public static int armSpecimenPick = armSamplePick;
+    public static int armSpecimenOver = 700;
+    public static int armSpecimenClip = 775;
+    public static int armSpecimenRest = armSampleRest;
 
-    public static int armSpeciminPick = 1360;
-    public static int armSpeciminPlace = 690;
-    public static int armSpeciminRest = 1000;
+    public static int armCurrent;
+
+    public static boolean leftBumperPressed = false;
+    public static boolean rightBumperPressed = false;
 
 
 }

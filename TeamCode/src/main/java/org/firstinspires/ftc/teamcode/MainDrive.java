@@ -28,11 +28,12 @@ public class MainDrive extends LinearOpMode {
 
     boolean YIsPressed = false;
 
+    boolean leftBumperPressed = false;
+    boolean rightBumperPressed = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        CommandScheduler.getInstance().run();
-        // constructor takes in frontLeft, frontRight, backLeft, backRight motors
-        // IN THAT ORDER
+        //CommandScheduler.getInstance().run();
 
         DriveSubsystem drive = new DriveSubsystem(
                 new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312),
@@ -50,7 +51,6 @@ public class MainDrive extends LinearOpMode {
                 new CRServo(hardwareMap, "grabber"),
                 new SimpleServo(hardwareMap, "wrist", 0,1)
         );
-
         // This is the built-in IMU in the REV hub.
         // We're initializing it by its default parameters
         // and name in the config ('imu'). The orientation
@@ -103,7 +103,7 @@ public class MainDrive extends LinearOpMode {
                 YIsPressed = false;
             }
 
-            if (sampleScoring = true) {
+            if (sampleScoring == true) {
                 if (driverOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
                     arm.setArm(DriveConstants.armSamplePick);
                     claw.grabberPick();
@@ -115,7 +115,8 @@ public class MainDrive extends LinearOpMode {
                     claw.grabberStop();
                 }
 
-                claw.SetWristCenter();
+                    claw.SetWristCenter();
+
 
                 if (driverOp.getButton(GamepadKeys.Button.A)) {
                     claw.grabberPlace();
@@ -124,41 +125,77 @@ public class MainDrive extends LinearOpMode {
                 if (driverOp.getButton(GamepadKeys.Button.B)) {
                     arm.setArm(DriveConstants.armZero);
                 }
+
+
+                if (driverOp.getButton(GamepadKeys.Button.X)) {
+                    claw.SetWristCenter();
+                }
+
+
                 telemetry.addLine("Sample Scoring");
-                telemetry.update();
             }
 
-            if (sampleScoring = false) {
+
+            if (sampleScoring == false) {
+                if (driverOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                    arm.setArm(DriveConstants.armSamplePick);
+                    claw.grabberPick();
+                } else if (driverOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+                    arm.setArm(DriveConstants.armSampleScore);
+                    claw.grabberStop();
+                }  else if (driverOp.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+                    arm.setArm(DriveConstants.armSpecimenOver);
+                } else if (driverOp.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
+                    arm.setArm(DriveConstants.armSpecimenClip);
+                } else {
+                    arm.setArm(DriveConstants.armSampleRest);
+                }
+
+
                 if (driverOp.getButton(GamepadKeys.Button.DPAD_LEFT)) {
                     claw.SetWristLeft();
                 } else if (driverOp.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
                     claw.SetWristRight();
+                } else if (driverOp.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+                    claw.SetWristCenter();
                 }
 
+
                 if (driverOp.getButton(GamepadKeys.Button.A)) {
-                    claw.grabberPick();
-                } else if (driverOp.getButton(GamepadKeys.Button.B)) {
                     claw.grabberPlace();
-                } else {
-                    claw.grabberStop();
+                }
+
+                if (driverOp.getButton(GamepadKeys.Button.B)) {
+                    arm.setArm(DriveConstants.armZero);
+                }
+
+
+                /*if (driverOp.getButton(GamepadKeys.Button.LEFT_BUMPER) && !leftBumperPressed) {
+                    arm.setArm(DriveConstants.armCurrent -= 50);
+                    leftBumperPressed = true;
+                } else if (driverOp.getButton(GamepadKeys.Button.RIGHT_BUMPER) && !rightBumperPressed) {
+                    arm.setArm(DriveConstants.armCurrent += 50);
+                    rightBumperPressed = true;
+                }*/
+
+                if (!driverOp.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+                    leftBumperPressed = false;
+                }
+
+                if (!driverOp.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+                    rightBumperPressed = false;
+                }
+
+                if (driverOp.getButton(GamepadKeys.Button.X)) {
+                    claw.SetWristCenter();
                 }
 
 
                 telemetry.addLine("Specimin Scoring");
-                telemetry.update();
             }
 
 
-
             telemetry.update();
-
-
         }
     }
-    public void updateTelemetry(String[] telem) {
-        for (String s : telem) {
-            telemetry.addLine(s);
-        }
-    }
-
 }

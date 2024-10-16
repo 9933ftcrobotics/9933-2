@@ -6,6 +6,8 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 
+import org.firstinspires.ftc.teamcode.DriveConstants;
+
 public class ArmSubsystem extends SubsystemBase {
     private Motor arm;
     private double targetPos = 0;
@@ -36,6 +38,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void powerArm(int Power) {
         arm.set(Power);
+    }
+
+    public void armCurrent() {
+        DriveConstants.armCurrent = arm.getCurrentPosition();
     }
 
     public String[] getArmTelemetry() {
