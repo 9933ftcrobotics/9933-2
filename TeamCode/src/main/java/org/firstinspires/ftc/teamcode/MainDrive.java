@@ -24,12 +24,14 @@ public class MainDrive extends LinearOpMode {
     // https://docs.ftclib.org/ftclib/features/drivebases#control-scheme
     static final boolean FIELD_CENTRIC = true;
 
-    boolean sampleScoring = true; //true = sample false = specimin
+    boolean sampleScoring; //true = sample false = specimin
 
     boolean YIsPressed = false;
 
     boolean leftBumperPressed = false;
     boolean rightBumperPressed = false;
+
+    boolean started = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -72,126 +74,130 @@ public class MainDrive extends LinearOpMode {
 
 
         // the extended gamepad object
-        GamepadEx driverOp = new GamepadEx(gamepad1);
+        GamepadEx driver1 = new GamepadEx(gamepad1);
+        GamepadEx driver2 = new GamepadEx(gamepad2);
+
 
         waitForStart();
 
         while (!isStopRequested()) {
 
-            drive.drive(driverOp.getLeftX(), driverOp.getLeftY(), driverOp.getRightX(), true);
+            drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
 
 
-            /*if (driverOp.getButton(GamepadKeys.Button.B)) {
+            /*if (driver1.getButton(GamepadKeys.Button.B)) {
                 arm.setArm(600);
             } else {
                 arm.setArm(200);
             }*/
+            if (!started) {
+                arm.setArm(500);
+                claw.SetWristCenter();
+            }
 
-            if (driverOp.getButton(GamepadKeys.Button.Y ) && YIsPressed == false) {
-                telemetry.addLine("Y is pressed");
+            if (driver1.getButton(GamepadKeys.Button.A) && !started || driver2.getButton(GamepadKeys.Button.A) && !started) {
+                arm.setArm(DriveConstants.armSampleRest);
+                sampleScoring = true;
+                started = true;
+            }
+
+            if (started == true) {
+
+                if (driver1.getButton(GamepadKeys.Button.Y) && YIsPressed == false || driver2.getButton(GamepadKeys.Button.Y) && YIsPressed == false) {
+                    telemetry.addLine("Y is pressed");
+                    if (sampleScoring == true) {
+                        sampleScoring = false;
+                        telemetry.addLine("sampleScoring is true. Changing to false");
+                    } else if (sampleScoring == false) {
+                        sampleScoring = true;
+                        telemetry.addLine("sampleScoring is false. Changing to true");
+                    }
+                    YIsPressed = true;
+                }
+
+                if (!driver1.getButton(GamepadKeys.Button.Y) && !driver2.getButton(GamepadKeys.Button.Y)) {
+                    YIsPressed = false;
+                }
+
                 if (sampleScoring == true) {
-                    sampleScoring = false;
-                    telemetry.addLine("sampleScoring is true. Changing to false");
-                } else if (sampleScoring == false) {
-                    sampleScoring = true;
-                    telemetry.addLine("sampleScoring is false. Changing to true");
-                }
-                YIsPressed = true;
-            }
-
-            if (!driverOp.getButton(GamepadKeys.Button.Y)) {
-                YIsPressed = false;
-            }
-
-            if (sampleScoring == true) {
-                if (driverOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-                    arm.setArm(DriveConstants.armSamplePick);
-                    claw.grabberPick();
-                } else if (driverOp.getButton(GamepadKeys.Button.DPAD_UP)) {
-                    arm.setArm(DriveConstants.armSampleScore);
-                    claw.grabberStop();
-                } else {
-                    arm.setArm(DriveConstants.armSampleRest);
-                    claw.grabberStop();
-                }
+                    if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                        arm.setArm(DriveConstants.armSamplePick);
+                        claw.grabberPick();
+                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
+                        arm.setArm(DriveConstants.armSampleScore);
+                        claw.grabberStop();
+                    } else if (driver1.getButton(GamepadKeys.Button.B) || driver2.getButton(GamepadKeys.Button.B)) {
+                        arm.setArm(DriveConstants.armZero);
+                    } else if (driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
+                        arm.setArm(DriveConstants.armStartHang);
+                    } else if (driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+                        arm.setArm(DriveConstants.armFinishHang);
+                    } else{
+                        arm.setArm(DriveConstants.armSampleRest);
+                        claw.grabberStop();
+                    }
 
                     claw.SetWristCenter();
 
 
-                if (driverOp.getButton(GamepadKeys.Button.A)) {
-                    claw.grabberPlace();
-                }
-
-                if (driverOp.getButton(GamepadKeys.Button.B)) {
-                    arm.setArm(DriveConstants.armZero);
-                }
+                    if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
+                        claw.grabberPlace();
+                    }
 
 
-                if (driverOp.getButton(GamepadKeys.Button.X)) {
-                    claw.SetWristCenter();
+                    telemetry.addLine("Sample Scoring");
                 }
 
 
-                telemetry.addLine("Sample Scoring");
-            }
+                if (sampleScoring == false) {
+                    if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                        arm.setArm(DriveConstants.armSamplePick);
+                        claw.grabberPick();
+                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
+                        arm.setArm(DriveConstants.armSampleScore);
+                        claw.grabberStop();
+                    } else if (driver1.getButton(GamepadKeys.Button.B) || driver2.getButton(GamepadKeys.Button.B)) {
+                        arm.setArm(DriveConstants.armZero);
+                        claw.grabberStop();
+                    } else if (driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON) || driver2.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+                        arm.setArm(DriveConstants.armSpecimenClip);
+                        claw.grabberStop();
+                    } else if (!driver1.getButton(GamepadKeys.Button.A) && !driver2.getButton(GamepadKeys.Button.A)) {
+                        arm.setArm(DriveConstants.armSpecimenRest);
+                        claw.grabberStop();
+                    }
 
 
-            if (sampleScoring == false) {
-                if (driverOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-                    arm.setArm(DriveConstants.armSamplePick);
-                    claw.grabberPick();
-                } else if (driverOp.getButton(GamepadKeys.Button.DPAD_UP)) {
-                    arm.setArm(DriveConstants.armSampleScore);
-                    claw.grabberStop();
-                }  else if (driverOp.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
-                    arm.setArm(DriveConstants.armSpecimenOver);
-                } else if (driverOp.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
-                    arm.setArm(DriveConstants.armSpecimenClip);
-                } else {
-                    arm.setArm(DriveConstants.armSampleRest);
+                    if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) || driver2.getButton(GamepadKeys.Button.DPAD_LEFT)) {
+                        claw.SetWristLeft();
+                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
+                        claw.SetWristRight();
+                    } else if (driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+                        claw.SetWristCenter();
+                    }
+
+
+                    if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
+                        claw.grabberPlace();
+                    }
+
+
+
+                    if (!driver1.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+                        leftBumperPressed = false;
+                    }
+
+                    if (!driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+                        rightBumperPressed = false;
+                    }
+
+                    if (driver1.getButton(GamepadKeys.Button.X)) {
+                        claw.SetWristCenter();
+                    }
+
+
+                    telemetry.addLine("Specimen Scoring");
                 }
-
-
-                if (driverOp.getButton(GamepadKeys.Button.DPAD_LEFT)) {
-                    claw.SetWristLeft();
-                } else if (driverOp.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
-                    claw.SetWristRight();
-                } else if (driverOp.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                    claw.SetWristCenter();
-                }
-
-
-                if (driverOp.getButton(GamepadKeys.Button.A)) {
-                    claw.grabberPlace();
-                }
-
-                if (driverOp.getButton(GamepadKeys.Button.B)) {
-                    arm.setArm(DriveConstants.armZero);
-                }
-
-
-                /*if (driverOp.getButton(GamepadKeys.Button.LEFT_BUMPER) && !leftBumperPressed) {
-                    arm.setArm(DriveConstants.armCurrent -= 50);
-                    leftBumperPressed = true;
-                } else if (driverOp.getButton(GamepadKeys.Button.RIGHT_BUMPER) && !rightBumperPressed) {
-                    arm.setArm(DriveConstants.armCurrent += 50);
-                    rightBumperPressed = true;
-                }*/
-
-                if (!driverOp.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-                    leftBumperPressed = false;
-                }
-
-                if (!driverOp.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                    rightBumperPressed = false;
-                }
-
-                if (driverOp.getButton(GamepadKeys.Button.X)) {
-                    claw.SetWristCenter();
-                }
-
-
-                telemetry.addLine("Specimin Scoring");
             }
 
 

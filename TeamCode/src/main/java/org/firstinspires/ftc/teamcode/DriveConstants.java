@@ -21,12 +21,15 @@ public class DriveConstants {
     public static int armSampleRest = 1150;
     public static int armSampleScore = 790;
 
-    public static int armZero = 75;
+    public static int armZero = 200;
 
     public static int armSpecimenPick = armSamplePick;
-    public static int armSpecimenOver = 700;
-    public static int armSpecimenClip = 775;
-    public static int armSpecimenRest = armSampleRest;
+    public static int armSpecimenOver = 875;
+    public static int armSpecimenClip = 875;
+    public static int armSpecimenRest = 760;
+
+    public static int armStartHang = 875;
+    public static int armFinishHang = 125;
 
     public static int armCurrent;
 
