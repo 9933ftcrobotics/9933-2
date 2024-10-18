@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.DriveConstants;
 public class DriveSubsystem extends SubsystemBase {
 
     private Motor leftFront, rightFront, rightRear, leftRear;
-    private Encoder leftEncoder, rightEncoder;
+    private int leftEncoder, rightEncoder, backEncoder;
     private GyroEx gyro;
     private DifferentialDriveOdometry odometry;
     private DifferentialDriveKinematics kinematics;
@@ -39,12 +39,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        odometry.update(gyro.getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance());
+        leftEncoder = leftFront.getCurrentPosition();
+        rightEncoder = rightFront.getCurrentPosition();
+        backEncoder = leftRear.getCurrentPosition();
     }
 
-    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-        return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
-    }
+
 
     public Pose2d getCurrentPose() {
         return odometry.getPoseMeters();
@@ -111,5 +111,14 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void Drive_System_Test(boolean run_leftFront, boolean run_rightFront, boolean run_leftRear, boolean run_rightRear){
         drive.driveWithMotorPowers((run_leftFront ? 1.0:0.0),(run_rightFront ? 1.0:0.0),(run_leftRear ? 1.0:0.0),(run_rightRear ? 1.0:0.0) );
+    }
+
+    public String[] getDriveTelemetry() {
+        return new String[]{
+                ("Left Encoder: " + String.valueOf(leftEncoder)),
+                ("Right Encoder: " + String.valueOf(rightEncoder)),
+                ("Back Encoder: " + String.valueOf(backEncoder))
+
+        };
     }
 }

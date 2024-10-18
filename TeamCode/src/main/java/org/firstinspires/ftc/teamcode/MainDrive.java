@@ -35,7 +35,9 @@ public class MainDrive extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        //CommandScheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
+        // constructor takes in frontLeft, frontRight, backLeft, backRight motors
+        // IN THAT ORDER
 
         DriveSubsystem drive = new DriveSubsystem(
                 new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312),
@@ -53,6 +55,7 @@ public class MainDrive extends LinearOpMode {
                 new CRServo(hardwareMap, "grabber"),
                 new SimpleServo(hardwareMap, "wrist", 0,1)
         );
+
         // This is the built-in IMU in the REV hub.
         // We're initializing it by its default parameters
         // and name in the config ('imu'). The orientation
@@ -195,13 +198,28 @@ public class MainDrive extends LinearOpMode {
                         claw.SetWristCenter();
                     }
 
-
+                    updateTelemetry(drive.getDriveTelemetry());
+                    updateTelemetry(arm.getArmTelemetry());
+                    telemetry.update();
                     telemetry.addLine("Specimen Scoring");
                 }
             }
 
 
             telemetry.update();
+
+
         }
     }
+    public void updateTelemetry(String[] telem) {
+        for (String s : telem) {
+            try {
+                telemetry.addLine(s);
+            } catch(Exception e) {
+                telemetry.addLine("Error with this line");
+            }
+
+        }
+    }
+
 }
