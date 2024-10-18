@@ -8,7 +8,10 @@ import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.sun.tools.javac.util.List;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
@@ -16,7 +19,10 @@ import org.firstinspires.ftc.teamcode.subsystems.HuskyLensSubsystem;
 
 @TeleOp
 public class HuskyLensTest extends LinearOpMode {
-    private HuskyLens huksy;
+    private HuskyLens huskyLens;
+
+    int XCenter = 160;
+    int YCenter = 120;
 
     // This variable determines whether the following program
     // uses field-centric or robot-centric driving styles. The
@@ -25,6 +31,13 @@ public class HuskyLensTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        ElapsedTime myElapsedTime;
+        HuskyLens.Block[] myHuskyLensBlocks;
+        HuskyLens.Block myHuskyLensBlock;
+
+        huskyLens = hardwareMap.get(HuskyLens.class, "huskyLens");
+
         //CommandScheduler.getInstance().run();
 
         DriveSubsystem drive = new DriveSubsystem(
@@ -70,14 +83,52 @@ public class HuskyLensTest extends LinearOpMode {
         // the extended gamepad object
         GamepadEx driver1 = new GamepadEx(gamepad1);
 
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+
+        myElapsedTime = new ElapsedTime();
+
         waitForStart();
 
         while (!isStopRequested()) {
 
-            drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
-            //if () {
+            if (myElapsedTime.seconds() >= 1) {
+                myElapsedTime.reset();
+                myHuskyLensBlocks = huskyLens.blocks();
+                telemetry.addData("Block count", JavaUtil.listLength(myHuskyLensBlocks));
+                for (HuskyLens.Block myHuskyLensBlock_item : myHuskyLensBlocks) {
+                    int XPower = 0;
+                    int YPower = 0;
+                    myHuskyLensBlock = myHuskyLensBlock_item;
+                    telemetry.addData("Block", "id=" + myHuskyLensBlock.id + " size: " + myHuskyLensBlock.width + "x" + myHuskyLensBlock.height + " position: " + myHuskyLensBlock.x + "," + myHuskyLensBlock.y);
+                    if (myHuskyLensBlock.width > myHuskyLensBlock.height) {
+                        if (myHuskyLensBlock.x > XCenter) {
+                            XPower = 1;
+                        } else {
+                            XPower = 0;
+                        }
+                        if (myHuskyLensBlock.x < XCenter) {
+                            XPower = -1;
+                        } else {
+                            XPower = 0;
+                        }
+                        if (myHuskyLensBlock.y < YCenter) {
+                            YPower = 1;
+                        } else {
+                            YPower = 0;
+                        }
+                        if (myHuskyLensBlock.y > YCenter) {
+                            YPower = -1;
+                        } else {
+                            YPower = 0;
+                        }
+                        //drive.drive(XPower, YPower, 0, false);
+                        telemetry.addData("Y", YPower);
+                        telemetry.addData("X", XPower);
+                    }
+                }
+                telemetry.update();
+            }
 
-            //}
 
 
             telemetry.update();
