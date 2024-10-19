@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -44,7 +45,8 @@ public class MainDrive extends LinearOpMode {
                 new Motor(hardwareMap, "rightFront", Motor.GoBILDA.RPM_312),
                 new Motor(hardwareMap, "rightRear", Motor.GoBILDA.RPM_312),
                 new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312),
-                new RevIMU(hardwareMap)
+                new RevIMU(hardwareMap),
+                hardwareMap.get(HuskyLens.class, "huskyLens")
         );
 
         ArmSubsystem arm = new ArmSubsystem(
@@ -84,8 +86,6 @@ public class MainDrive extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-
-            drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
 
 
             /*if (driver1.getButton(GamepadKeys.Button.B)) {
@@ -146,6 +146,11 @@ public class MainDrive extends LinearOpMode {
                     if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
                         claw.grabberPlace();
                     }
+                    if (driver1.getButton(GamepadKeys.Button.B)) {
+                        drive.huskyRead();
+                    } else {
+                        drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
+                    }
 
 
                     telemetry.addLine("Sample Scoring");
@@ -153,6 +158,8 @@ public class MainDrive extends LinearOpMode {
 
 
                 if (sampleScoring == false) {
+                    drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
+
                     if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
                         arm.setArm(DriveConstants.armSamplePick);
                         claw.grabberPick();

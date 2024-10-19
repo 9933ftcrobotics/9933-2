@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.geometry.Pose2d;
@@ -10,10 +11,19 @@ import com.arcrobotics.ftclib.hardware.motors.Motor.Encoder;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.DifferentialDriveKinematics;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.DifferentialDriveOdometry;
 import com.arcrobotics.ftclib.kinematics.wpilibkinematics.DifferentialDriveWheelSpeeds;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
+
+    int XCenter = 160;
+    int YCenter = 120;
+
+    double XkP = 0.01;
+    double YkP = 0.01;
 
     private Motor leftFront, rightFront, rightRear, leftRear;
     private int leftEncoder, rightEncoder, backEncoder;
@@ -23,7 +33,23 @@ public class DriveSubsystem extends SubsystemBase {
     private MecanumDrive drive;
     private RevIMU imu;
 
-    public DriveSubsystem(Motor leftFront, Motor rightFront, Motor rightRear, Motor leftRear, RevIMU imu) {
+    private HuskyLens huskyLens;
+
+    ElapsedTime myElapsedTime;
+    HuskyLens.Block[] myHuskyLensBlocks;
+    HuskyLens.Block myHuskyLensBlock;
+
+    String[] name = new String[]{
+        ("Left Encoder: " + String.valueOf(leftEncoder)),
+                ("Right Encoder: " + String.valueOf(rightEncoder)),
+                ("Back Encoder: " + String.valueOf(backEncoder)),
+            "XPower HuskyLens: ",
+            "YPower HuskyLens: "
+
+    };
+
+
+    public DriveSubsystem(Motor leftFront, Motor rightFront, Motor rightRear, Motor leftRear, RevIMU imu, HuskyLens huskyLens) {
         leftFront.setInverted(true);
         leftRear.setInverted(true);
         rightFront.setInverted(false);
@@ -32,6 +58,7 @@ public class DriveSubsystem extends SubsystemBase {
                 leftFront, rightFront, leftRear, rightRear
         );
         this.imu = imu;
+        this.huskyLens = huskyLens;
         imu.init();
 
         kinematics = new DifferentialDriveKinematics(DriveConstants.TRACK_WIDTH);
@@ -113,12 +140,33 @@ public class DriveSubsystem extends SubsystemBase {
         drive.driveWithMotorPowers((run_leftFront ? 1.0:0.0),(run_rightFront ? 1.0:0.0),(run_leftRear ? 1.0:0.0),(run_rightRear ? 1.0:0.0) );
     }
 
-    public String[] getDriveTelemetry() {
-        return new String[]{
-                ("Left Encoder: " + String.valueOf(leftEncoder)),
-                ("Right Encoder: " + String.valueOf(rightEncoder)),
-                ("Back Encoder: " + String.valueOf(backEncoder))
+    public void setReadType() {
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+    }
+    public void huskyRead() {
+        myElapsedTime = new ElapsedTime();
+        if (myElapsedTime.seconds() >= 1) {
+            myElapsedTime.reset();
+            myHuskyLensBlocks = huskyLens.blocks();
 
-        };
+            for (HuskyLens.Block myHuskyLensBlock_item : myHuskyLensBlocks ) {
+                double XPower = 0;
+                double YPower = 0;
+                myHuskyLensBlock = myHuskyLensBlock_item;
+                double XDis = XCenter - myHuskyLensBlock.x;
+                double YDis = YCenter - myHuskyLensBlock.y;
+                if (myHuskyLensBlock.width > myHuskyLensBlock.height) {
+                    XPower = XDis * XkP;
+                    YPower = YDis * YkP;
+                    name[3] += String.valueOf(XPower);
+                    name[4] += String.valueOf(YPower);
+                    drive(XPower, YPower, 0, false);
+                }
+            }
+        }
+    }
+
+    public String[] getDriveTelemetry() {
+        return name;
     }
 }
