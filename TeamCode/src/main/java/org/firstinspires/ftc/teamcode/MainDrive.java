@@ -146,7 +146,10 @@ public class MainDrive extends LinearOpMode {
                     if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
                         claw.grabberPlace();
                     }
+
+
                     if (driver1.getButton(GamepadKeys.Button.B)) {
+                        arm.setArm(25);
                         drive.huskyRead();
                     } else {
                         drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);

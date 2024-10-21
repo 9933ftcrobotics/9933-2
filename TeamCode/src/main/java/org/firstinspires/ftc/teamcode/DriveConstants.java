@@ -36,5 +36,7 @@ public class DriveConstants {
     public static boolean leftBumperPressed = false;
     public static boolean rightBumperPressed = false;
 
+    public static boolean huskyReading = false;
+
 
 }

@@ -156,11 +156,13 @@ public class DriveSubsystem extends SubsystemBase {
                 double XDis = XCenter - myHuskyLensBlock.x;
                 double YDis = YCenter - myHuskyLensBlock.y;
                 if (myHuskyLensBlock.width > myHuskyLensBlock.height) {
-                    XPower = XDis * XkP;
-                    YPower = YDis * YkP;
-                    name[3] += String.valueOf(XPower);
-                    name[4] += String.valueOf(YPower);
-                    drive(XPower, YPower, 0, false);
+                    if (myHuskyLensBlock.id == 1) {
+                        XPower = XDis * XkP;
+                        YPower = YDis * YkP;
+                        name[3] += String.valueOf(XPower);
+                        name[4] += String.valueOf(YPower);
+                        drive(XPower, YPower, 0, false);
+                    }
                 }
             }
         }
