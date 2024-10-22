@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.RevIMU;
@@ -20,7 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.HuskyLensSubsystem;
 
 @TeleOp
 public class HuskyLensTest extends LinearOpMode {
-    //private HuskyLens huskyLens;
+    private HuskyLens huskyLens;
 
     int XCenter = 160;
     int YCenter = 120;
@@ -40,6 +39,7 @@ public class HuskyLensTest extends LinearOpMode {
         HuskyLens.Block[] myHuskyLensBlocks;
         HuskyLens.Block myHuskyLensBlock;
 
+        huskyLens = hardwareMap.get(HuskyLens.class, "huskyLens");
 
         //CommandScheduler.getInstance().run();
 
@@ -49,7 +49,7 @@ public class HuskyLensTest extends LinearOpMode {
                 new Motor(hardwareMap, "rightRear", Motor.GoBILDA.RPM_312),
                 new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312),
                 new RevIMU(hardwareMap),
-                hardwareMap.get(HuskyLens.class, "huskyLens")
+                huskyLens = hardwareMap.get(HuskyLens.class, "huskyLens")
         );
 
         ArmSubsystem arm = new ArmSubsystem(
@@ -87,7 +87,7 @@ public class HuskyLensTest extends LinearOpMode {
         // the extended gamepad object
         GamepadEx driver1 = new GamepadEx(gamepad1);
 
-        drive.setReadType();
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
 
         myElapsedTime = new ElapsedTime();
 
@@ -95,8 +95,28 @@ public class HuskyLensTest extends LinearOpMode {
 
         while (!isStopRequested()) {
 
+            if (myElapsedTime.seconds() >= 1) {
+                myElapsedTime.reset();
+                myHuskyLensBlocks = huskyLens.blocks();
+                telemetry.addData("Block count", JavaUtil.listLength(myHuskyLensBlocks));
+                for (HuskyLens.Block myHuskyLensBlock_item : myHuskyLensBlocks ) {
+                    double XPower = 0;
+                    double YPower = 0;
+                    myHuskyLensBlock = myHuskyLensBlock_item;
+                    telemetry.addData("Block", "id=" + myHuskyLensBlock.id + " size: " + myHuskyLensBlock.width + "x" + myHuskyLensBlock.height + " position: " + myHuskyLensBlock.x + "," + myHuskyLensBlock.y);
 
-            drive.huskyRead();
+                    double XDis = XCenter - myHuskyLensBlock.x;
+                    double YDis = YCenter - myHuskyLensBlock.y;
+                    if (myHuskyLensBlock.width > myHuskyLensBlock.height) {
+                       XPower = XDis * XkP;
+                       YPower = YDis * YkP;
+                        drive.drive(XPower, YPower, 0, false);
+                        telemetry.addData("Y", YPower);
+                        telemetry.addData("X", XPower);
+                    }
+                }
+                telemetry.update();
+            }
 
 
 

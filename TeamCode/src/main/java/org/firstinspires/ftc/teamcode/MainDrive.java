@@ -36,7 +36,7 @@ public class MainDrive extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        CommandScheduler.getInstance().run();
+        //CommandScheduler.getInstance().run(); //Doesn't Work. Works on first run, no second.
         // constructor takes in frontLeft, frontRight, backLeft, backRight motors
         // IN THAT ORDER
 
@@ -104,7 +104,7 @@ public class MainDrive extends LinearOpMode {
                 started = true;
             }
 
-            if (started == true) {
+            //if (started == true) {
 
                 if (driver1.getButton(GamepadKeys.Button.Y) && YIsPressed == false || driver2.getButton(GamepadKeys.Button.Y) && YIsPressed == false) {
                     telemetry.addLine("Y is pressed");
@@ -148,12 +148,12 @@ public class MainDrive extends LinearOpMode {
                     }
 
 
-                    if (driver1.getButton(GamepadKeys.Button.B)) {
+                    /*if (driver1.getButton(GamepadKeys.Button.B)) {
                         arm.setArm(25);
                         drive.huskyRead();
-                    } else {
+                    } else {*/
                         drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
-                    }
+                    //}
 
 
                     telemetry.addLine("Sample Scoring");
@@ -208,12 +208,12 @@ public class MainDrive extends LinearOpMode {
                         claw.SetWristCenter();
                     }
 
-                    updateTelemetry(drive.getDriveTelemetry());
-                    updateTelemetry(arm.getArmTelemetry());
+                    //updateTelemetry(drive.getDriveTelemetry());
+                    //updateTelemetry(arm.getArmTelemetry());
                     telemetry.update();
                     telemetry.addLine("Specimen Scoring");
                 }
-            }
+            //}
 
 
             telemetry.update();
@@ -221,7 +221,7 @@ public class MainDrive extends LinearOpMode {
 
         }
     }
-    public void updateTelemetry(String[] telem) {
+    /*public void updateTelemetry(String[] telem) {
         for (String s : telem) {
             try {
                 telemetry.addLine(s);
@@ -230,6 +230,6 @@ public class MainDrive extends LinearOpMode {
             }
 
         }
-    }
+    }*/
 
 }
