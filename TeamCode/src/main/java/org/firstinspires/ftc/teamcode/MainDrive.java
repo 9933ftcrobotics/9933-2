@@ -36,7 +36,7 @@ public class MainDrive extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        //CommandScheduler.getInstance().run(); //Doesn't Work. Works on first run, no second.
+        ///CommandScheduler.getInstance().run(); //Doesn't Work. Works on first run, no second.
         // constructor takes in frontLeft, frontRight, backLeft, backRight motors
         // IN THAT ORDER
 
@@ -57,6 +57,8 @@ public class MainDrive extends LinearOpMode {
                 new CRServo(hardwareMap, "grabber"),
                 new SimpleServo(hardwareMap, "wrist", 0,1)
         );
+
+        drive.setReadType(); //Set Husky Cam to color mode
 
         // This is the built-in IMU in the REV hub.
         // We're initializing it by its default parameters
@@ -148,12 +150,12 @@ public class MainDrive extends LinearOpMode {
                     }
 
 
-                    /*if (driver1.getButton(GamepadKeys.Button.B)) {
+                    if (driver1.getButton(GamepadKeys.Button.B)) {
                         arm.setArm(25);
                         drive.huskyRead();
-                    } else {*/
+                    } else {
                         drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
-                    //}
+                    }
 
 
                     telemetry.addLine("Sample Scoring");

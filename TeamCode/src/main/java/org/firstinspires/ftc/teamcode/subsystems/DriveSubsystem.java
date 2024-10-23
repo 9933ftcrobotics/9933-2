@@ -162,6 +162,8 @@ public class DriveSubsystem extends SubsystemBase {
                         name[3] += String.valueOf(XPower);
                         name[4] += String.valueOf(YPower);
                         drive(XPower, YPower, 0, false);
+                    } else {
+                        drive(0, 0, 0, false);
                     }
                 }
             }
