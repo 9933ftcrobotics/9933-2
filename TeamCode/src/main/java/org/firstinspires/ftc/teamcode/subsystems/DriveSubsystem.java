@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
+import com.arcrobotics.ftclib.kinematics.wpilibkinematics.MecanumDriveOdometry;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
@@ -28,7 +30,7 @@ public class DriveSubsystem extends SubsystemBase {
     private Motor leftFront, rightFront, rightRear, leftRear;
     private int leftEncoder, rightEncoder, backEncoder;
     private GyroEx gyro;
-    private DifferentialDriveOdometry odometry;
+    private HolonomicOdometry odometry;
     private DifferentialDriveKinematics kinematics;
     private MecanumDrive drive;
     private RevIMU imu;
@@ -39,13 +41,16 @@ public class DriveSubsystem extends SubsystemBase {
     HuskyLens.Block[] myHuskyLensBlocks;
     HuskyLens.Block myHuskyLensBlock;
 
-    String[] name = new String[]{
-        ("Left Encoder: " + String.valueOf(leftEncoder)),
-                ("Right Encoder: " + String.valueOf(rightEncoder)),
-                ("Back Encoder: " + String.valueOf(backEncoder)),
-            "XPower HuskyLens: ",
-            "YPower HuskyLens: "
 
+    String[] telemetry = new String[]{
+            "Left Encoder: ",
+            "Right Encoder: ",
+            "Back Encoder: ",
+            "XPower HuskyLens: ",
+            "YPower HuskyLens: ",
+            "xPos: ",
+            "yPos: ",
+            "posAngle"
     };
 
 
@@ -61,6 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
         this.huskyLens = huskyLens;
         imu.init();
 
+        odometry = new HolonomicOdometry(leftFront::getCurrentPosition, rightFront::getCurrentPosition, leftRear::getCurrentPosition, DriveConstants.TRACK_WIDTH, DriveConstants.CENTER_WHEEL_OFFSET);
         kinematics = new DifferentialDriveKinematics(DriveConstants.TRACK_WIDTH);
     }
 
@@ -69,12 +75,19 @@ public class DriveSubsystem extends SubsystemBase {
         leftEncoder = leftFront.getCurrentPosition();
         rightEncoder = rightFront.getCurrentPosition();
         backEncoder = leftRear.getCurrentPosition();
+        telemetry[0] += "10000000";//leftFront.getCurrentPosition();
+        telemetry[1] += rightFront.getCurrentPosition();
+        telemetry[2] += leftRear.getCurrentPosition();
+        telemetry[5] += odometry.getPose().getX();
+        telemetry[6] += odometry.getPose().getY();
+        telemetry[7] += odometry.getPose().getRotation();
+        odometry.updatePose();
     }
 
 
 
     public Pose2d getCurrentPose() {
-        return odometry.getPoseMeters();
+        return odometry.getPose();
     }
 
     public void drive(double LeftX, double LeftY, double RightX, boolean FIELD_CENTRIC) {
@@ -142,10 +155,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void setReadType() {
         huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
-    }
-    public void huskyRead() {
         myElapsedTime = new ElapsedTime();
-        if (myElapsedTime.seconds() >= 1) {
+
+    }
+    public void huskyRead(int colorId) {
+        boolean PowerSent = false;
+        if (myElapsedTime.seconds() >= 0.1) {
             myElapsedTime.reset();
             myHuskyLensBlocks = huskyLens.blocks();
 
@@ -156,14 +171,13 @@ public class DriveSubsystem extends SubsystemBase {
                 double XDis = XCenter - myHuskyLensBlock.x;
                 double YDis = YCenter - myHuskyLensBlock.y;
                 if (myHuskyLensBlock.width > myHuskyLensBlock.height) {
-                    if (myHuskyLensBlock.id == 1) {
+                    if (myHuskyLensBlock.id == colorId && !PowerSent) {
                         XPower = XDis * XkP;
                         YPower = YDis * YkP;
-                        name[3] += String.valueOf(XPower);
-                        name[4] += String.valueOf(YPower);
+                        telemetry[3] += String.valueOf(XPower);
+                        telemetry[4] += String.valueOf(YPower);
                         drive(XPower, YPower, 0, false);
-                    } else {
-                        drive(0, 0, 0, false);
+                        PowerSent = true;
                     }
                 }
             }
@@ -171,6 +185,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public String[] getDriveTelemetry() {
-        return name;
+        //return telemetry;
+        return new String[]{String.valueOf(leftEncoder), String.valueOf(rightEncoder)};
     }
 }

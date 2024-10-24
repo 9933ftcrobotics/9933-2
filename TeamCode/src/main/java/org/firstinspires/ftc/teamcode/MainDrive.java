@@ -36,7 +36,7 @@ public class MainDrive extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        ///CommandScheduler.getInstance().run(); //Doesn't Work. Works on first run, no second.
+
         // constructor takes in frontLeft, frontRight, backLeft, backRight motors
         // IN THAT ORDER
 
@@ -88,6 +88,7 @@ public class MainDrive extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
+            CommandScheduler.getInstance().run(); //Doesn't Work. Works on first run, not second.
 
 
             /*if (driver1.getButton(GamepadKeys.Button.B)) {
@@ -96,12 +97,12 @@ public class MainDrive extends LinearOpMode {
                 arm.setArm(200);
             }*/
             if (!started) {
-                arm.setArm(500);
+                //arm.setArm(500);
                 claw.SetWristCenter();
             }
 
             if (driver1.getButton(GamepadKeys.Button.A) && !started || driver2.getButton(GamepadKeys.Button.A) && !started) {
-                arm.setArm(DriveConstants.armSampleRest);
+                //arm.setArm(DriveConstants.armSampleRest);
                 sampleScoring = true;
                 started = true;
             }
@@ -150,9 +151,9 @@ public class MainDrive extends LinearOpMode {
                     }
 
 
-                    if (driver1.getButton(GamepadKeys.Button.B)) {
-                        arm.setArm(25);
-                        drive.huskyRead();
+                    if (driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+                        drive.huskyRead(1);
+                        telemetry.addLine("HuskyReading");
                     } else {
                         drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
                     }
@@ -217,21 +218,25 @@ public class MainDrive extends LinearOpMode {
                 }
             //}
 
+            drive.getCurrentPose();
+
+            updateTelemetry(drive.getDriveTelemetry());
 
             telemetry.update();
 
 
         }
+        //CommandScheduler.getInstance().disable();
     }
-    /*public void updateTelemetry(String[] telem) {
+    public void updateTelemetry(String[] telem) {
         for (String s : telem) {
-            try {
+            //try {
                 telemetry.addLine(s);
-            } catch(Exception e) {
-                telemetry.addLine("Error with this line");
-            }
+            //} catch(Exception e) {
+                //telemetry.addLine("Error with this line");
+            //}
 
         }
-    }*/
+    }
 
 }
