@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
 @Config
 public class DriveConstants {
 
@@ -40,6 +42,20 @@ public class DriveConstants {
     public static boolean rightBumperPressed = false;
 
     public static boolean huskyReading = false;
+
+
+    public static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+
+    public static int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    public static AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
+    public static boolean targetFound = false;    // Set to true when an AprilTag target is detected
+    public static boolean foundTag = false; //This will help with picking a tag and using it only
+    public static double xCameraPos; ///This is the position of the robot along the wall NOTE: This is NOT x in RoadRunner. It is along the wall of the apriltag.
+    public static double yCameraPos; ///This is the position of the robot away from the wall
+    public static double yawCameraPos; //This is the rotation of the robot in perspective of the wall. Facing wall is 0.
+    public static boolean driving = false; //If using roadrunner path
+
+    public static int runTrajectory;
 
 
 }
