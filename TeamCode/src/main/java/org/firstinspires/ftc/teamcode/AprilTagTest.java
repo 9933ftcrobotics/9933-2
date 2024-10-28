@@ -90,8 +90,7 @@ public class AprilTagTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(DriveConstants.xCameraPos, DriveConstants.yCameraPos, Math.toRadians(DriveConstants.yawCameraPos));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(DriveConstants.xCameraPos, DriveConstants.yCameraPos, Math.toRadians(DriveConstants.yawCameraPos)));
 
         Action trajectoryAction1;
 
@@ -162,6 +161,8 @@ public class AprilTagTest extends LinearOpMode {
             }
 
             if (DriveConstants.targetFound) {
+                telemetry.addLine("Robot SHOULD move");
+                arm.setArm(500);
                 DriveConstants.driving = true;
                 Actions.runBlocking(
                         new SequentialAction(
