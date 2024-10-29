@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Camera;
+
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -12,6 +16,7 @@ import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
@@ -57,6 +62,9 @@ public class MainDrive extends LinearOpMode {
                 new CRServo(hardwareMap, "grabber"),
                 new SimpleServo(hardwareMap, "wrist", 0,1)
         );
+        CameraSubsystem camera = new CameraSubsystem(
+
+        );
 
         drive.setReadType(); //Set Husky Cam to color mode
 
@@ -86,9 +94,23 @@ public class MainDrive extends LinearOpMode {
 
 
         waitForStart();
+        camera.initAprilTag();
 
         while (!isStopRequested()) {
-            CommandScheduler.getInstance().run(); //Doesn't Work. Works on first run, not second.
+            CommandScheduler.getInstance().run();
+            updateTelemetry(drive.getDriveTelemetry());
+
+            camera.readCam();
+            if (DriveConstants.targetFound) {
+                telemetry.addLine("Robot SHOULD move");
+                //arm.setArm(500);
+                DriveConstants.driving = true;
+                Actions.runBlocking(
+                        new SequentialAction(
+
+                        )
+                );
+            }
 
 
             /*if (driver1.getButton(GamepadKeys.Button.B)) {
@@ -226,16 +248,10 @@ public class MainDrive extends LinearOpMode {
 
 
         }
-        //CommandScheduler.getInstance().disable();
     }
     public void updateTelemetry(String[] telem) {
         for (String s : telem) {
-            //try {
-                telemetry.addLine(s);
-            //} catch(Exception e) {
-                //telemetry.addLine("Error with this line");
-            //}
-
+            telemetry.addLine(s);
         }
     }
 

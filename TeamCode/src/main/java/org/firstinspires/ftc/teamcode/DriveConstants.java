@@ -57,5 +57,12 @@ public class DriveConstants {
 
     public static int runTrajectory;
 
+    public static boolean foundBlock = false;
+    public static int colorID;
+    public static int autoPickPosition;
+    public static double XDis;
+    public static boolean roadRunning = false;
+
+
 
 }

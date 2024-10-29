@@ -27,6 +27,8 @@ public class DriveSubsystem extends SubsystemBase {
     double XkP = 0.01;
     double YkP = 0.01;
 
+    double imuAngle;
+
     private Motor leftFront, rightFront, rightRear, leftRear;
     private int leftEncoder, rightEncoder, backEncoder;
     private GyroEx gyro;
@@ -42,16 +44,16 @@ public class DriveSubsystem extends SubsystemBase {
     HuskyLens.Block myHuskyLensBlock;
 
 
-    String[] telemetry = new String[]{
-            "Left Encoder: ",
-            "Right Encoder: ",
-            "Back Encoder: ",
-            "XPower HuskyLens: ",
-            "YPower HuskyLens: ",
-            "xPos: ",
-            "yPos: ",
-            "posAngle"
-    };
+    //String[] telemetry = new String[]{
+            //"Left Encoder: ",
+            //"Right Encoder: ",
+            //"Back Encoder: ",
+            //"XPower HuskyLens: ",
+            //"YPower HuskyLens: ",
+            //"xPos: ",
+            //"yPos: ",
+            //"posAngle"
+    //};
 
 
     public DriveSubsystem(Motor leftFront, Motor rightFront, Motor rightRear, Motor leftRear, RevIMU imu, HuskyLens huskyLens) {
@@ -62,6 +64,11 @@ public class DriveSubsystem extends SubsystemBase {
         drive = new MecanumDrive(false,
                 leftFront, rightFront, leftRear, rightRear
         );
+
+        this.leftFront = leftFront;
+        this.rightFront = rightFront;
+        this.leftRear = leftRear;
+        this.rightRear = rightRear;
         this.imu = imu;
         this.huskyLens = huskyLens;
         imu.init();
@@ -75,12 +82,13 @@ public class DriveSubsystem extends SubsystemBase {
         leftEncoder = leftFront.getCurrentPosition();
         rightEncoder = rightFront.getCurrentPosition();
         backEncoder = leftRear.getCurrentPosition();
-        telemetry[0] += "10000000";//leftFront.getCurrentPosition();
-        telemetry[1] += rightFront.getCurrentPosition();
-        telemetry[2] += leftRear.getCurrentPosition();
-        telemetry[5] += odometry.getPose().getX();
-        telemetry[6] += odometry.getPose().getY();
-        telemetry[7] += odometry.getPose().getRotation();
+        //telemetry[0] += "10000000";//leftFront.getCurrentPosition();
+        //telemetry[1] += rightFront.getCurrentPosition();
+        //telemetry[2] += leftRear.getCurrentPosition();
+        //telemetry[5] += odometry.getPose().getX();
+        //telemetry[6] += odometry.getPose().getY();
+        //telemetry[7] += odometry.getPose().getRotation();
+        imuAngle = imu.getRotation2d().getDegrees();
         odometry.updatePose();
     }
 
@@ -168,24 +176,45 @@ public class DriveSubsystem extends SubsystemBase {
                 double XPower = 0;
                 double YPower = 0;
                 myHuskyLensBlock = myHuskyLensBlock_item;
-                double XDis = XCenter - myHuskyLensBlock.x;
-                double YDis = YCenter - myHuskyLensBlock.y;
+                DriveConstants.XDis = XCenter - myHuskyLensBlock.x;
+                //double YDis = YCenter - myHuskyLensBlock.y;
                 if (myHuskyLensBlock.width > myHuskyLensBlock.height) {
-                    if (myHuskyLensBlock.id == colorId && !PowerSent) {
-                        XPower = XDis * XkP;
-                        YPower = YDis * YkP;
-                        telemetry[3] += String.valueOf(XPower);
-                        telemetry[4] += String.valueOf(YPower);
-                        drive(XPower, YPower, 0, false);
-                        PowerSent = true;
+                    if (myHuskyLensBlock.id == colorId) {
+                        DriveConstants.foundBlock = true;
+                    } else {
+                        DriveConstants.foundBlock = false;
                     }
                 }
             }
         }
     }
 
+    public void starfeRight() {
+        leftFront.set(1);
+        leftRear.set(-1);
+        rightFront.set(-1);
+        rightRear.set(1);
+    }
+    public void starfeLeft() {
+        leftFront.set(-1);
+        leftRear.set(1);
+        rightFront.set(1);
+        rightRear.set(-1);
+    }
+
     public String[] getDriveTelemetry() {
-        //return telemetry;
-        return new String[]{String.valueOf(leftEncoder), String.valueOf(rightEncoder)};
+        String[] telem = {
+
+                "Robot Angle: " + String.valueOf(imuAngle),
+                "Left Odom Pod: " + String.valueOf(leftEncoder),
+                "Right Odom Pod: " + String.valueOf(rightEncoder),
+                "Back Odom Pod: " + String.valueOf(backEncoder)
+                /*"Front Left Pow: " + String.valueOf(leftFront.get()),
+                "Front Right Pow: " + String.valueOf(rightFront.get()),
+                "Rear Left Pow: " + String.valueOf(leftRear.get()),
+                "Rear Right Pow: " + String.valueOf(rightRear.get())*/
+
+        };
+        return telem;
     }
 }
