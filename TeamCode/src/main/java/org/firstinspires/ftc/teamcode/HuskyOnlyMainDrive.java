@@ -54,17 +54,17 @@ public class HuskyOnlyMainDrive extends LinearOpMode {
                 hardwareMap.get(HuskyLens.class, "huskyLens")
         );
 
-        ArmSubsystem arm = new ArmSubsystem(
+        /*ArmSubsystem arm = new ArmSubsystem(
                 new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312)
-        );
+        );*/
 
-        ClawSubsystem claw = new ClawSubsystem(
+        /*ClawSubsystem claw = new ClawSubsystem(
                 new CRServo(hardwareMap, "grabber"),
                 new SimpleServo(hardwareMap, "wrist", 0,1)
         );
         CameraSubsystem camera = new CameraSubsystem(
 
-        );
+        );*/
 
         drive.setReadType(); //Set Husky Cam to color mode
 
@@ -94,12 +94,12 @@ public class HuskyOnlyMainDrive extends LinearOpMode {
 
 
         waitForStart();
-        camera.initAprilTag();
+        //camera.initAprilTag();
 
         while (!isStopRequested()) {
             CommandScheduler.getInstance().run();
             updateTelemetry(drive.getDriveTelemetry());
-            drive.huskyRead(DriveConstants.colorID);
+            //drive.huskyRead(DriveConstants.colorID);
 
 
             if(driver1.getButton(GamepadKeys.Button.A)) {
@@ -124,21 +124,34 @@ public class HuskyOnlyMainDrive extends LinearOpMode {
 
             if (driver1.getButton(GamepadKeys.Button.Y)) {
 
-                drive.huskyRead(DriveConstants.colorID);
+                //drive.huskyRead(DriveConstants.colorID);
 
-                if (!DriveConstants.foundBlock) {
+                /*if (!DriveConstants.foundBlock) {
                     if (DriveConstants.autoPickPosition == 1) {
                         //strafe right
+                        telemetry.addLine("I need to strafe right!");
                     } else if (DriveConstants.autoPickPosition == 2) {
                         //strafe right or left code
+                        telemetry.addLine("I need to move right or left!");
                     } else if (DriveConstants.autoPickPosition == 3) {
                         //strafe left code
+                        telemetry.addLine("I need to strafe left!");
                     }
-                } else {
-                    //Drive to sample
+                } else {*/
+                    if (DriveConstants.xDis > 8 && DriveConstants.xDis < -8 && DriveConstants.yDis > 8 && DriveConstants.yDis < -8) {
+                        drive.huskyRead(DriveConstants.colorID);
+                        telemetry.addLine("I want to pick up a piece but it's too far!");
+                    } else {
+                        //arm.setArm(0);
+                        //claw.grabberPick();
+                        //sleep(1000);
+                        //arm.setArm(150);
+                        //claw.grabberStop();
+                        telemetry.addLine("I want to pick up a piece because I can reach it!");
+                    }
                 }
 
-            }
+            //}
             drive.getCurrentPose();
             updateTelemetry(drive.getDriveTelemetry());
 

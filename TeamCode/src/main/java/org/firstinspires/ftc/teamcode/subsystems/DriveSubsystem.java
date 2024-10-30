@@ -45,14 +45,14 @@ public class DriveSubsystem extends SubsystemBase {
 
 
     //String[] telemetry = new String[]{
-            //"Left Encoder: ",
-            //"Right Encoder: ",
-            //"Back Encoder: ",
-            //"XPower HuskyLens: ",
-            //"YPower HuskyLens: ",
-            //"xPos: ",
-            //"yPos: ",
-            //"posAngle"
+    //"Left Encoder: ",
+    //"Right Encoder: ",
+    //"Back Encoder: ",
+    //"XPower HuskyLens: ",
+    //"YPower HuskyLens: ",
+    //"xPos: ",
+    //"yPos: ",
+    //"posAngle"
     //};
 
 
@@ -176,13 +176,17 @@ public class DriveSubsystem extends SubsystemBase {
                 double XPower = 0;
                 double YPower = 0;
                 myHuskyLensBlock = myHuskyLensBlock_item;
-                DriveConstants.XDis = XCenter - myHuskyLensBlock.x;
-                //double YDis = YCenter - myHuskyLensBlock.y;
+                DriveConstants.xDis = XCenter - myHuskyLensBlock.x;
+                DriveConstants.yDis = YCenter - myHuskyLensBlock.y;
                 if (myHuskyLensBlock.width > myHuskyLensBlock.height) {
-                    if (myHuskyLensBlock.id == colorId) {
-                        DriveConstants.foundBlock = true;
-                    } else {
-                        DriveConstants.foundBlock = false;
+                    if (DriveConstants.xDis > 8 && DriveConstants.xDis < -8 && DriveConstants.yDis > 8 && DriveConstants.yDis < -8) {
+                        if (myHuskyLensBlock.id == colorId /*&& !PowerSent*/) {
+                            DriveConstants.foundBlock = true;
+                            XPower = DriveConstants.xDis * XkP;
+                            YPower = DriveConstants.yDis * YkP;
+                            drive(XPower, YPower, 0, false);
+                            //PowerSent = true;
+                        }
                     }
                 }
             }
