@@ -174,7 +174,7 @@ public class MainDrive extends LinearOpMode {
 
 
                     if (driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
-                        drive.huskyRead(1);
+                        drive.huskyReadDrive(1);
                         telemetry.addLine("HuskyReading");
                     } else {
                         drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);

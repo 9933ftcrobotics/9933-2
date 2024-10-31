@@ -35,11 +35,11 @@ public class HuskyLensTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        ElapsedTime myElapsedTime;
+        /*ElapsedTime myElapsedTime;
         HuskyLens.Block[] myHuskyLensBlocks;
         HuskyLens.Block myHuskyLensBlock;
 
-        huskyLens = hardwareMap.get(HuskyLens.class, "huskyLens");
+        huskyLens = hardwareMap.get(HuskyLens.class, "huskyLens");*/
 
         //CommandScheduler.getInstance().run();
 
@@ -49,17 +49,18 @@ public class HuskyLensTest extends LinearOpMode {
                 new Motor(hardwareMap, "rightRear", Motor.GoBILDA.RPM_312),
                 new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312),
                 new RevIMU(hardwareMap),
-                huskyLens = hardwareMap.get(HuskyLens.class, "huskyLens")
+                hardwareMap.get(HuskyLens.class, "huskyLens")
         );
+        drive.setReadType();
 
-        ArmSubsystem arm = new ArmSubsystem(
+        /*ArmSubsystem arm = new ArmSubsystem(
                 new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312)
         );
 
         ClawSubsystem claw = new ClawSubsystem(
                 new CRServo(hardwareMap, "grabber"),
                 new SimpleServo(hardwareMap, "wrist", 0,1)
-        );
+        );*/
 
         /*HuskyLensSubsystem husky = new ClawSubsystem(
                 new HuskyLens(hardwareMap, "huskyLens")
@@ -87,15 +88,16 @@ public class HuskyLensTest extends LinearOpMode {
         // the extended gamepad object
         GamepadEx driver1 = new GamepadEx(gamepad1);
 
-        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+        //huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
 
-        myElapsedTime = new ElapsedTime();
+
+        //myElapsedTime = new ElapsedTime();
 
         waitForStart();
 
         while (!isStopRequested()) {
 
-            if (myElapsedTime.seconds() >= 1) {
+            /*if (myElapsedTime.seconds() >= 1) {
                 myElapsedTime.reset();
                 myHuskyLensBlocks = huskyLens.blocks();
                 telemetry.addData("Block count", JavaUtil.listLength(myHuskyLensBlocks));
@@ -120,6 +122,8 @@ public class HuskyLensTest extends LinearOpMode {
 
 
 
+            telemetry.update();*/
+            drive.huskyReadDrive(2);
             telemetry.update();
         }
     }

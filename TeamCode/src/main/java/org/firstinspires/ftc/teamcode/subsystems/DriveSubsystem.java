@@ -21,11 +21,16 @@ import org.firstinspires.ftc.teamcode.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
 
+    public static boolean ready = false;
+
+    double XPower = 0;
+    double YPower = 0;
+
     int XCenter = 160;
     int YCenter = 120;
 
-    double XkP = 0.01;
-    double YkP = 0.01;
+    double XkP = 0.004;
+    double YkP = 0.004;
 
     double imuAngle;
 
@@ -60,7 +65,8 @@ public class DriveSubsystem extends SubsystemBase {
         leftFront.setInverted(true);
         leftRear.setInverted(true);
         rightFront.setInverted(false);
-        rightRear.setInverted(false);
+        //rightRear.setInverted(false);
+        rightRear.setInverted(true);
         drive = new MecanumDrive(false,
                 leftFront, rightFront, leftRear, rightRear
         );
@@ -79,17 +85,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        leftEncoder = leftFront.getCurrentPosition();
-        rightEncoder = rightFront.getCurrentPosition();
-        backEncoder = leftRear.getCurrentPosition();
+        //leftEncoder = leftFront.getCurrentPosition();
+        //rightEncoder = rightFront.getCurrentPosition();
+        //backEncoder = leftRear.getCurrentPosition();
         //telemetry[0] += "10000000";//leftFront.getCurrentPosition();
         //telemetry[1] += rightFront.getCurrentPosition();
         //telemetry[2] += leftRear.getCurrentPosition();
         //telemetry[5] += odometry.getPose().getX();
         //telemetry[6] += odometry.getPose().getY();
         //telemetry[7] += odometry.getPose().getRotation();
-        imuAngle = imu.getRotation2d().getDegrees();
-        odometry.updatePose();
+        //imuAngle = imu.getRotation2d().getDegrees();
+        //odometry.updatePose();
     }
 
 
@@ -166,31 +172,63 @@ public class DriveSubsystem extends SubsystemBase {
         myElapsedTime = new ElapsedTime();
 
     }
-    public void huskyRead(int colorId) {
+    public void huskyReadDrive(int colorId) {
+        boolean PowerSent = false;
+
+        if (myElapsedTime.seconds() >= 0.01) {
+            myElapsedTime.reset();
+            myHuskyLensBlocks = huskyLens.blocks();
+            for (HuskyLens.Block myHuskyLensBlock_item : myHuskyLensBlocks ) {
+                myHuskyLensBlock = myHuskyLensBlock_item;
+                DriveConstants.xDis = XCenter - myHuskyLensBlock.x;
+                DriveConstants.yDis = YCenter - myHuskyLensBlock.y;
+                if (myHuskyLensBlock.width > myHuskyLensBlock.height) {
+                    if (myHuskyLensBlock.id == colorId /*&& !PowerSent*/) {
+                        if (DriveConstants.xDis > 8 || DriveConstants.xDis < -8 || DriveConstants.yDis > 8 || DriveConstants.yDis < -8) {
+                            DriveConstants.foundBlock = true;
+                            XPower = -DriveConstants.xDis * XkP;
+                            YPower = DriveConstants.yDis * YkP;
+                            drive(XPower, YPower, 0, false);
+                            ready = false;
+                            PowerSent = true;
+                        } else {
+                            ready = true;
+                            drive(0, 0, 0, false);
+                        }
+                    } else {
+                        drive(0, 0, 0, false);
+                    }
+                } else {
+                    drive(0, 0, 0, false);
+                }
+            }
+        }
+    }
+
+    public double[] huskyReadOnly(int colorId) {
+        double[] huskyData = {0, 0};
         boolean PowerSent = false;
         if (myElapsedTime.seconds() >= 0.1) {
             myElapsedTime.reset();
             myHuskyLensBlocks = huskyLens.blocks();
 
             for (HuskyLens.Block myHuskyLensBlock_item : myHuskyLensBlocks ) {
-                double XPower = 0;
-                double YPower = 0;
                 myHuskyLensBlock = myHuskyLensBlock_item;
                 DriveConstants.xDis = XCenter - myHuskyLensBlock.x;
                 DriveConstants.yDis = YCenter - myHuskyLensBlock.y;
                 if (myHuskyLensBlock.width > myHuskyLensBlock.height) {
-                    if (DriveConstants.xDis > 8 && DriveConstants.xDis < -8 && DriveConstants.yDis > 8 && DriveConstants.yDis < -8) {
-                        if (myHuskyLensBlock.id == colorId /*&& !PowerSent*/) {
-                            DriveConstants.foundBlock = true;
-                            XPower = DriveConstants.xDis * XkP;
-                            YPower = DriveConstants.yDis * YkP;
-                            drive(XPower, YPower, 0, false);
-                            //PowerSent = true;
-                        }
+                    //if (DriveConstants.xDis > 8 && DriveConstants.xDis < -8 && DriveConstants.yDis > 8 && DriveConstants.yDis < -8) {
+                    if (myHuskyLensBlock.id == colorId /*&& !PowerSent*/) {
+                        DriveConstants.foundBlock = true;
+                        huskyData[0] = DriveConstants.xDis * XkP;
+                        huskyData[1] = DriveConstants.yDis * YkP;
+                        //PowerSent = true;
                     }
+                    //}
                 }
             }
         }
+        return huskyData;
     }
 
     public void starfeRight() {

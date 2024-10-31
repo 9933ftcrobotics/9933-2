@@ -98,11 +98,11 @@ public class HuskyOnlyMainDrive extends LinearOpMode {
 
         while (!isStopRequested()) {
             CommandScheduler.getInstance().run();
-            updateTelemetry(drive.getDriveTelemetry());
+            //updateTelemetry(drive.getDriveTelemetry());
             //drive.huskyRead(DriveConstants.colorID);
 
 
-            if(driver1.getButton(GamepadKeys.Button.A)) {
+            /*if(driver1.getButton(GamepadKeys.Button.A)) {
                 DriveConstants.colorID = 1;
             }
             if(driver1.getButton(GamepadKeys.Button.B)) {
@@ -120,11 +120,11 @@ public class HuskyOnlyMainDrive extends LinearOpMode {
             }
             if(driver1.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
                 DriveConstants.autoPickPosition = 3; //Right
-            }
+            }*/
 
-            if (driver1.getButton(GamepadKeys.Button.Y)) {
+            //if (driver1.getButton(GamepadKeys.Button.Y)) {
 
-                //drive.huskyRead(DriveConstants.colorID);
+                //double[] readHusky = drive.huskyReadOnly(DriveConstants.colorID);
 
                 /*if (!DriveConstants.foundBlock) {
                     if (DriveConstants.autoPickPosition == 1) {
@@ -138,8 +138,8 @@ public class HuskyOnlyMainDrive extends LinearOpMode {
                         telemetry.addLine("I need to strafe left!");
                     }
                 } else {*/
-                    if (DriveConstants.xDis > 8 && DriveConstants.xDis < -8 && DriveConstants.yDis > 8 && DriveConstants.yDis < -8) {
-                        drive.huskyRead(DriveConstants.colorID);
+                    /*if (DriveConstants.xDis > 8 || DriveConstants.xDis < -8 || DriveConstants.yDis > 8 || DriveConstants.yDis < -8) {
+                        drive.huskyReadDrive(2);
                         telemetry.addLine("I want to pick up a piece but it's too far!");
                     } else {
                         //arm.setArm(0);
@@ -148,11 +148,23 @@ public class HuskyOnlyMainDrive extends LinearOpMode {
                         //arm.setArm(150);
                         //claw.grabberStop();
                         telemetry.addLine("I want to pick up a piece because I can reach it!");
-                    }
-                }
+                    }*/
+
+            if (DriveSubsystem.ready == true) {
+                telemetry.addLine("I want to pick up a piece because I can reach it!");
+            }
+            drive.huskyReadDrive(2);
+
+                    telemetry.addData("xDis", DriveConstants.xDis);
+            telemetry.addData("yDis", DriveConstants.yDis);
+                //}
 
             //}
-            drive.getCurrentPose();
+
+            //telemetry.addLine(String.valueOf(readHusky[0]));
+            //telemetry.addLine(String.valueOf(readHusky[1]));
+
+            //drive.getCurrentPose();
             updateTelemetry(drive.getDriveTelemetry());
 
             telemetry.addData("color ID wanted", DriveConstants.colorID);
