@@ -153,7 +153,7 @@ public class MainDrive extends LinearOpMode {
                         arm.setArm(DriveConstants.armSamplePick);
                         claw.grabberPick();
                     } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
-                        arm.setArm(DriveConstants.armSampleScore);
+                        arm.setArm(DriveConstants.armSampleScoreLow);
                         claw.grabberStop();
                     } else if (driver1.getButton(GamepadKeys.Button.B) || driver2.getButton(GamepadKeys.Button.B)) {
                         arm.setArm(DriveConstants.armZero);
@@ -193,7 +193,7 @@ public class MainDrive extends LinearOpMode {
                         arm.setArm(DriveConstants.armSamplePick);
                         claw.grabberPick();
                     } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
-                        arm.setArm(DriveConstants.armSampleScore);
+                        arm.setArm(DriveConstants.armSpecimenClip);
                         claw.grabberStop();
                     } else if (driver1.getButton(GamepadKeys.Button.B) || driver2.getButton(GamepadKeys.Button.B)) {
                         arm.setArm(DriveConstants.armZero);
