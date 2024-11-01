@@ -10,12 +10,17 @@ import org.firstinspires.ftc.teamcode.DriveConstants;
 
 public class ArmSubsystem extends SubsystemBase {
     private Motor arm;
+    private Motor outArm;
     private double targetPos = 0;
+    private double outTargetPos = 0;
 
-    public ArmSubsystem(Motor arm) {
+    public ArmSubsystem(Motor arm, Motor outArm) {
         arm.setInverted(false);
+        outArm.setInverted(false); //TODO: Check reverse
         this.arm = arm;
+        this.outArm = outArm;
         arm.resetEncoder();
+        outArm.resetEncoder();
     }
 
     public void setArm(int Pos) {
@@ -36,6 +41,24 @@ public class ArmSubsystem extends SubsystemBase {
         }
     }
 
+    public void setOutArm(int outPos) {
+
+        targetPos = outPos;
+        // set the run mode
+
+        PIDController pid = new PIDController(0.005,0,0);
+
+
+        // set the tolerance
+        double tolerence = 13.6;   // allowed maximum error
+        // perform the control loop
+        if (Math.abs(outPos-arm.getCurrentPosition()) > tolerence) {
+            arm.set(pid.calculate(arm.getCurrentPosition(),outPos));
+        } else {
+            arm.stopMotor(); // stop the motor
+        }
+    }
+
     public void powerArm(int Power) {
         arm.set(Power);
     }
@@ -47,7 +70,9 @@ public class ArmSubsystem extends SubsystemBase {
     public String[] getArmTelemetry() {
         return new String[]{
                 ("Current Arm Pos: " + String.valueOf(arm.getCurrentPosition())),
-                ("Target Arm Pos: " + String.valueOf(targetPos))
+                ("Target Arm Pos: " + String.valueOf(targetPos)),
+                ("Current Out Arm Pos: " + String.valueOf(arm.getCurrentPosition())),
+                ("Target Out Arm Pos: " + String.valueOf(outTargetPos))
 
         };
     }

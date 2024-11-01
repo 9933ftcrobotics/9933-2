@@ -43,7 +43,8 @@ public class AutoSystemTest extends LinearOpMode {
 
 
         ArmSubsystem arm = new ArmSubsystem(
-                new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312)
+                new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312),
+                new Motor(hardwareMap, "outArm", Motor.GoBILDA.RPM_312)
         );
 
         ClawSubsystem claw = new ClawSubsystem(

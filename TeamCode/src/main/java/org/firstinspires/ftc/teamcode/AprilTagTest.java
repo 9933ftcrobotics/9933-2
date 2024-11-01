@@ -101,7 +101,8 @@ public class AprilTagTest extends LinearOpMode {
 
 
         ArmSubsystem arm = new ArmSubsystem(
-                new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312)
+                new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312),
+                new Motor(hardwareMap, "outArm", Motor.GoBILDA.RPM_312)
         );
 
         initAprilTag();
