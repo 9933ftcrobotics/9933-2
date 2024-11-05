@@ -16,7 +16,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public ArmSubsystem(Motor arm, Motor outArm) {
         arm.setInverted(false);
-        outArm.setInverted(false); //TODO: Check reverse
+        outArm.setInverted(true);
         this.arm = arm;
         this.outArm = outArm;
         arm.resetEncoder();
@@ -59,7 +59,7 @@ public class ArmSubsystem extends SubsystemBase {
         }
     }
 
-    public void powerArm(int Power) {
+    public void powerArm(double Power) {
         arm.set(Power);
     }
 

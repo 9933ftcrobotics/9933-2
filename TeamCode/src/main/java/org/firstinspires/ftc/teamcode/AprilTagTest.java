@@ -73,7 +73,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "AprilTagTest", group = "Concept")
-
+@Disabled
 public class AprilTagTest extends LinearOpMode {
     ///More info in the april tag sample
 

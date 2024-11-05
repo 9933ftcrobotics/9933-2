@@ -42,7 +42,8 @@ public class SystemTest extends LinearOpMode {
 
 
         ArmSubsystem arm = new ArmSubsystem(
-                new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312)
+                new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312),
+                new Motor(hardwareMap, "outArm", Motor.GoBILDA.RPM_312)
         );
 
         ClawSubsystem claw = new ClawSubsystem(
@@ -114,6 +115,8 @@ public class SystemTest extends LinearOpMode {
             } else {
                 claw.grabberStop();
             }
+            arm.powerArm(driverOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+            arm.powerArm(-driverOp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
             telemetry.addData("Wheel Power. Press Right Bumper To Change. Either 1 or 0.25.", WheelPower);
             telemetry.addLine("A=Right Rear, B=Right Front, Y=Left Front X=Left Rear \n " +

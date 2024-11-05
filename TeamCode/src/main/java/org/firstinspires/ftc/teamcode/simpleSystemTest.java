@@ -1,41 +1,41 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.RevIMU;
-import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServoImpl;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
 
-import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 
 @TeleOp
-@Disabled
-public class ToggleTest extends LinearOpMode {
-
+public class simpleSystemTest extends LinearOpMode {
+    double WheelPower = 1; //This will change
+    int armPower;
     // This variable determines whether the following program
     // uses field-centric or robot-centric driving styles. The
     // differences between them can be read here in the docs:
     // https://docs.ftclib.org/ftclib/features/drivebases#control-scheme
-    static final boolean FIELD_CENTRIC = true;
-
-    boolean sampleScoring = true; //true = sample false = specimin
-
-    boolean YIsPressed = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        CommandScheduler.getInstance().run();
         // constructor takes in frontLeft, frontRight, backLeft, backRight motors
         // IN THAT ORDER
 
+
+        ArmSubsystem arm = new ArmSubsystem(
+                new Motor(hardwareMap, "arm", Motor.GoBILDA.RPM_312),
+                new Motor(hardwareMap, "outArm", Motor.GoBILDA.RPM_312)
+        );
 
 
         // This is the built-in IMU in the REV hub.
@@ -67,37 +67,26 @@ public class ToggleTest extends LinearOpMode {
 
 
 
-
-            /*if (driverOp.getButton(GamepadKeys.Button.B)) {
-                arm.setArm(600);
+            //Wheel Speed
+            //Arm
+            if (driverOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+                //arm.setOutArm(100);
+            } else if (driverOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                //arm.setOutArm(200);
             } else {
-                arm.setArm(200);
-            }*/
-            telemetry.addData("This is at:", sampleScoring);
-            if (driverOp.getButton(GamepadKeys.Button.Y ) && YIsPressed == false) {
-                telemetry.addLine("Y is pressed");
-                if (sampleScoring == true) {
-                    sampleScoring = false;
-                    telemetry.addLine("sampleScoring is true. Changing to false");
-                } else if (sampleScoring == false) {
-                    sampleScoring = true;
-                    telemetry.addLine("sampleScoring is false. Changing to true");
-                }
-                YIsPressed = true;
+                //arm.setOutArm(0);
             }
+            arm.powerArm(driverOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+            arm.powerArm(-driverOp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
 
-            if (!driverOp.getButton(GamepadKeys.Button.Y)) {
-                YIsPressed = false;
-            }
-
+            telemetry.addData("Wheel Power. Press Right Bumper To Change. Either 1 or 0.25.", WheelPower);
+            telemetry.addLine("A=Right Rear, B=Right Front, Y=Left Front X=Left Rear \n " +
+                    "Dpad Left=Wrist Left, Dpad Right=Wrist Right, neither=Wrist center \n" +
+                    "Dpad Up=Arm Power=1, Dpad Down=Arm Power = -1/Backwards, WARNING! NEITHER DPAD UP OR DOWN, ARM POWER=0 \n" +
+                    "Left Stick Button=Grabber Pick Up, Right Stick Button=Grabber Put Down, ELSE, grabber stop");
             telemetry.update();
 
 
-        }
-    }
-    public void updateTelemetry(String[] telem) {
-        for (String s : telem) {
-            telemetry.addLine(s);
         }
     }
 

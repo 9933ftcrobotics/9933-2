@@ -95,9 +95,11 @@ public class ExtendoArmDrive extends LinearOpMode {
 
 
         waitForStart();
-        camera.initAprilTag();
+        //camera.initAprilTag();
 
         while (!isStopRequested()) {
+            arm.armCurrent();
+            telemetry.addData("Current", DriveConstants.armCurrent);
             CommandScheduler.getInstance().run();
             updateTelemetry(drive.getDriveTelemetry());
 
@@ -211,7 +213,6 @@ public class ExtendoArmDrive extends LinearOpMode {
 
                 }
             }
-
             drive.getCurrentPose();
 
             updateTelemetry(drive.getDriveTelemetry());
