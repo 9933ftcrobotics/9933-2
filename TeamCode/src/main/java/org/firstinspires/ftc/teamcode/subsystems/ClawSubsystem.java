@@ -30,7 +30,7 @@ public class ClawSubsystem extends SubsystemBase {
     public void grabberStop() { grabber.set(0); }
 
     public void SetWristCenter() {
-        wrist.setPosition(0.5);
+        wrist.setPosition(0.7);
     }
 
     public void SetWristLeft() {

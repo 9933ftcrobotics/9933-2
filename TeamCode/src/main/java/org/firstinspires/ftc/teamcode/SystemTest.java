@@ -87,13 +87,23 @@ public class SystemTest extends LinearOpMode {
             }
 
             //Arm
-            if (driverOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+           /* if (driverOp.getButton(GamepadKeys.Button.DPAD_UP)) {
                 arm.powerArm(1);
             } else if (driverOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
                 arm.powerArm(-1);
             } else {
                 arm.powerArm(0);
+            }*/
+
+            if (driverOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+                arm.setArm(1670);
+            } else if (driverOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                arm.setArm(0);
+            } else {
+                arm.setArm(400);
             }
+
+
 
             //Wrist
             if (driverOp.getButton(GamepadKeys.Button.DPAD_LEFT)) {
