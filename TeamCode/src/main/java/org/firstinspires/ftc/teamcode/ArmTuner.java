@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp
@@ -25,10 +26,11 @@ public class ArmTuner extends OpMode {
     public static double f = 0;
 
     public static int target = 0;
+    public static int outTarget = 0;
 
-    private final double ticks_in_degree =  537.7 / 360;
+    private final double ticks_in_degree =  5281.1 / 360;
 
-    private DcMotorEx arm_motor;
+    private DcMotorEx arm_motor,outArm;
 
     @Override
     public void init(){
@@ -39,6 +41,11 @@ public class ArmTuner extends OpMode {
         arm_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        outArm = hardwareMap.get(DcMotorEx.class, "outArm");
+        outArm.setDirection(DcMotorSimple.Direction.REVERSE);
+        outArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outArm.setTargetPosition(outTarget);
+        outArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
 
@@ -55,6 +62,9 @@ public class ArmTuner extends OpMode {
 
         arm_motor.setPower(power);
 
+        outArm.setPower(1);
+
+        outArm.setTargetPosition(outTarget);
         telemetry.addData("pos", armPos);
         telemetry.addData("target", target);
 
