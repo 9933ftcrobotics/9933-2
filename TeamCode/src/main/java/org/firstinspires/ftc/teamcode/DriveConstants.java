@@ -23,26 +23,26 @@ public class DriveConstants {
 
 
     public static int armSamplePick = 0;
-    public static int armSampleRest = 200;
-    public static int armSampleScoreLow = 300;
-    public static int armSampleScoreHigh = 500;
+    public static int armSampleRest = 400;
+    public static int armSampleScoreLow = 900;
+    public static int armSampleScoreHigh = 1000;
 
     public static int armZero = 100;
 
     public static int armSpecimenPick = armSamplePick;
-    public static int armSpecimenClip = 500;
-    public static int armSpecimenRest = 480;
+    public static int armSpecimenClip = 950;
+    public static int armSpecimenRest = 840;
 
-    public static int armOutSamplePick = 0;
-    public static int armOutSampleRest = 0;
+    public static int armOutSamplePick = 410;
+    public static int armOutSampleRest = 410;
     public static int armOutSampleScoreLow = 700;
-    public static int armOutSampleScoreHigh = 1800;
+    public static int armOutSampleScoreHigh = 2500;
 
-    public static int armOutZero = 100;
+    public static int armOutZero = 0;
 
     public static int armOutSpecimenPick = armOutSamplePick;
-    public static int armOutSpecimenClip = 650;
-    public static int armOutSpecimenRest = 0;
+    public static int armOutSpecimenClip = 450;
+    public static int armOutSpecimenRest = 410;
 
     //public static int armStartHang = 875;
     //public static int armFinishHang = 125;
