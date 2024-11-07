@@ -31,6 +31,10 @@ public class DriveSubsystem extends SubsystemBase {
         drive = new MecanumDrive(false,
                 leftFront, rightFront, leftRear, rightRear
         );
+        this.leftFront = leftFront;
+        this.leftRear = leftRear;
+        this.rightFront = rightFront;
+        this.rightRear = rightRear;
         this.imu = imu;
         imu.init();
 
