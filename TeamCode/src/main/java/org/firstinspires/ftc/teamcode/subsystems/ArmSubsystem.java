@@ -57,13 +57,13 @@ public class ArmSubsystem extends SubsystemBase {
         // set the run mode
 
         PIDController pid = new PIDController(0.005,0,0);
-        double ff = Math.cos(Math.toRadians(outPos / ticks_in_degree))*f;
+        //double ff = Math.cos(Math.toRadians(outPos / ticks_in_degree))*f;
 
         // set the tolerance
         double tolerence = 13.6;   // allowed maximum error
         // perform the control loop
         if (Math.abs(outPos-arm.getCurrentPosition()) > tolerence) {
-            outArm.set(pid.calculate(arm.getCurrentPosition(),outPos) + ff);
+            outArm.set(pid.calculate(arm.getCurrentPosition(),outPos)/* + ff*/);
         } else {
             outArm.stopMotor(); // stop the motor
         }

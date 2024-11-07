@@ -107,7 +107,7 @@ public class MainDriveTest extends LinearOpMode {
 
                 claw.SetWristCenter();
 
-                if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                /*if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
                     arm.setArm(DriveConstants.armSamplePick);
                     arm.setOutArm(DriveConstants.armOutSamplePick);
                     claw.grabberPick();
@@ -117,10 +117,10 @@ public class MainDriveTest extends LinearOpMode {
                 } else if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
                     arm.setArm(DriveConstants.armSampleScoreLow);
                     arm.setOutArm(DriveConstants.armOutSampleScoreLow);
-                } else {
+                } else {*/
                     arm.setArm(DriveConstants.armSampleRest);
                     arm.setOutArm(DriveConstants.armOutSampleRest);
-                }
+                //}
 
                 if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
                     claw.grabberPlace();
