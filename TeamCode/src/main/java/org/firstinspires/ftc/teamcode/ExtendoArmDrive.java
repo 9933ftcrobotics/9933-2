@@ -30,7 +30,7 @@ public class ExtendoArmDrive extends LinearOpMode {
     // https://docs.ftclib.org/ftclib/features/drivebases#control-scheme
     static final boolean FIELD_CENTRIC = true;
 
-    boolean sampleScoring; //true = sample false = specimin
+    boolean sampleScoring = true; //true = sample false = specimin
 
     boolean YIsPressed = false;
 
@@ -68,6 +68,7 @@ public class ExtendoArmDrive extends LinearOpMode {
         );
 
         drive.setReadType(); //Set Husky Cam to color mode
+        arm.resetOutArm();
 
         // This is the built-in IMU in the REV hub.
         // We're initializing it by its default parameters
@@ -100,6 +101,7 @@ public class ExtendoArmDrive extends LinearOpMode {
         while (!isStopRequested()) {
             arm.armCurrent();
             telemetry.addData("Current", DriveConstants.armCurrent);
+            telemetry.addData("Target", ArmSubsystem.target);
             CommandScheduler.getInstance().run();
             updateTelemetry(drive.getDriveTelemetry());
 
@@ -155,6 +157,10 @@ public class ExtendoArmDrive extends LinearOpMode {
 
                     if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
                         claw.grabberPlace();
+                    } else {
+                        if (!driver1.getButton(GamepadKeys.Button.DPAD_DOWN) && !driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                            claw.grabberStop();
+                        }
                     }
 
                     if (driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
@@ -198,13 +204,6 @@ public class ExtendoArmDrive extends LinearOpMode {
                         claw.grabberPlace();
                     }
 
-                    /*if (!driver1.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-                        leftBumperPressed = false;
-                    }
-
-                    if (!driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                        rightBumperPressed = false;
-                    }*/
 
                     //updateTelemetry(drive.getDriveTelemetry());
                     //updateTelemetry(arm.getArmTelemetry());
@@ -212,7 +211,7 @@ public class ExtendoArmDrive extends LinearOpMode {
                     telemetry.addLine("Specimen Scoring");
 
                 }
-            }
+            //}
             drive.getCurrentPose();
 
             updateTelemetry(drive.getDriveTelemetry());
@@ -220,7 +219,7 @@ public class ExtendoArmDrive extends LinearOpMode {
             telemetry.update();
 
 
-        //}
+        }
     }
     public void updateTelemetry(String[] telem) {
         for (String s : telem) {

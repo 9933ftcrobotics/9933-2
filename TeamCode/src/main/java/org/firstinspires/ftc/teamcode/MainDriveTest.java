@@ -13,6 +13,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 
 @TeleOp
+@Disabled
 public class MainDriveTest extends LinearOpMode {
 
     // This variable determines whether the following program
@@ -107,20 +109,25 @@ public class MainDriveTest extends LinearOpMode {
 
                 claw.SetWristCenter();
 
-                /*if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
                     arm.setArm(DriveConstants.armSamplePick);
                     arm.setOutArm(DriveConstants.armOutSamplePick);
                     claw.grabberPick();
                 } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
-                    arm.setArm(DriveConstants.armSampleScoreHigh);
-                    arm.setOutArm(DriveConstants.armOutSampleScoreHigh);
+                    if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 50) {
+                        arm.setArm(DriveConstants.armSampleScoreHigh);
+                        arm.setOutArm(0);
+                    } else {
+                        arm.setArm(DriveConstants.armSampleScoreHigh);
+                        arm.setOutArm(DriveConstants.armOutSampleScoreHigh);
+                    }
                 } else if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
                     arm.setArm(DriveConstants.armSampleScoreLow);
                     arm.setOutArm(DriveConstants.armOutSampleScoreLow);
-                } else {*/
+                } else {
                     arm.setArm(DriveConstants.armSampleRest);
                     arm.setOutArm(DriveConstants.armOutSampleRest);
-                //}
+                }
 
                 if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
                     claw.grabberPlace();

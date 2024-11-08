@@ -25,6 +25,9 @@ public class armTest extends OpMode {
     public static double p = 0.05, i = 0, d = 0;
     public static double f = 1;
 
+    public static double p2 = 0.05, i2 = 0, d2 = 0;
+    public static double f2 = 1;
+
     public static int target = 0;
     public static int outTarget = 0;
 
@@ -62,7 +65,15 @@ public class armTest extends OpMode {
 
         arm_motor.setPower(power);
 
-        outArm.setPower(1);
+        controller.setPID(p2,i2,d2);
+        int outArmPos = outArm.getCurrentPosition();
+
+        double pidOut = controller.calculate(outArmPos,outTarget);
+        double ffOut = Math.cos(Math.toRadians(target / ticks_in_degree))*f;
+
+        double power2 = pidOut + ffOut;
+
+        outArm.setPower(power2);
 
         outArm.setTargetPosition(outTarget);
         telemetry.addData("pos", armPos);

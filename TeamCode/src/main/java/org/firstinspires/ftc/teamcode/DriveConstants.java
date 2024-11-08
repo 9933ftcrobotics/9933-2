@@ -25,7 +25,7 @@ public class DriveConstants {
     public static int armSamplePick = 0;
     public static int armSampleRest = 400;
     public static int armSampleScoreLow = 900;
-    public static int armSampleScoreHigh = 1000;
+    public static int armSampleScoreHigh = 1200;
 
     public static int armZero = 100;
 

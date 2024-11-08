@@ -66,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
         leftRear.setInverted(true);
         rightFront.setInverted(false);
         //rightRear.setInverted(false);
-        rightRear.setInverted(true);
+        rightRear.setInverted(false);
         drive = new MecanumDrive(false,
                 leftFront, rightFront, leftRear, rightRear
         );
