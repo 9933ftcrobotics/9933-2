@@ -15,6 +15,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.CameraSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
@@ -28,11 +29,20 @@ public class ExtendoArmDrive extends LinearOpMode {
     // uses field-centric or robot-centric driving styles. The
     // differences between them can be read here in the docs:
     // https://docs.ftclib.org/ftclib/features/drivebases#control-scheme
+
+    private static ElapsedTime timmer = new ElapsedTime();
+    private static ElapsedTime rumble = new ElapsedTime();
+    private static ElapsedTime huskyTime = new ElapsedTime();
+    boolean warning = false;
+    boolean endGame = false;
+
     static final boolean FIELD_CENTRIC = true;
 
     boolean sampleScoring = true; //true = sample false = specimin
 
     boolean YIsPressed = false;
+
+    boolean upIsPressed = false;
 
     boolean leftBumperPressed = false;
     boolean rightBumperPressed = false;
@@ -69,25 +79,7 @@ public class ExtendoArmDrive extends LinearOpMode {
 
         drive.setReadType(); //Set Husky Cam to color mode
         arm.resetOutArm();
-
-        // This is the built-in IMU in the REV hub.
-        // We're initializing it by its default parameters
-        // and name in the config ('imu'). The orientation
-        // of the hub is important. Below is a model
-        // of the REV Hub and the orientation axes for the IMU.
-        //
-        //                           | Z axis
-        //                           |
-        //     (Motor Port Side)     |   / X axis
-        //                       ____|__/____
-        //          Y axis     / *   | /    /|   (IO Side)
-        //          _________ /______|/    //      I2C
-        //                   /___________ //     Digital
-        //                  |____________|/      Analog
-        //
-        //                 (Servo Port Side)
-        //
-        // (unapologetically stolen from the road-runner-quickstart)
+        rumble.reset();
 
 
         // the extended gamepad object
@@ -117,6 +109,10 @@ public class ExtendoArmDrive extends LinearOpMode {
                 YIsPressed = true;
             }
 
+            if (!driver1.getButton(GamepadKeys.Button.Y) && !driver2.getButton(GamepadKeys.Button.Y) ) {
+                YIsPressed = false;
+            }
+
             /*if (driver1.getButton(GamepadKeys.Button.A) && !started || driver2.getButton(GamepadKeys.Button.A) && !started) {
                 started = true;
             }*/
@@ -141,19 +137,106 @@ public class ExtendoArmDrive extends LinearOpMode {
                         arm.setArm(DriveConstants.armSamplePick);
                         arm.setOutArm(DriveConstants.armOutSamplePick);
                         claw.grabberPick();
+                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) || driver2.getButton(GamepadKeys.Button.DPAD_LEFT)) {
+                        /*if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 60) {
+                            arm.setArm(DriveConstants.armSamplePickFar);
+                            arm.setOutArm(50);
+                        } else {*/
+                            arm.setArm(DriveConstants.armSamplePickFar);
+                            arm.setOutArm(DriveConstants.armOutSamplePickFar);
+                            claw.grabberPick();
+                        //}
                     } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
-                        arm.setArm(DriveConstants.armSampleScoreHigh);
-                        arm.setOutArm(DriveConstants.armOutSampleScoreHigh);
+                        if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 60) {
+                            arm.setArm(DriveConstants.armSampleScoreHigh);
+                            arm.setOutArm(50);
+                        } else {
+                            arm.setArm(DriveConstants.armSampleScoreHigh);
+                            arm.setOutArm(DriveConstants.armOutSampleScoreHigh);
+                        }
                     } else if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
-                        arm.setArm(DriveConstants.armSampleScoreLow);
-                        arm.setOutArm(DriveConstants.armOutSampleScoreLow);
-                    } /*else if (driver1.getButton(GamepadKeys.Button.B) || driver2.getButton(GamepadKeys.Button.B)) {
-                        arm.setArm(DriveConstants.armZero);
-                        arm.setOutArm(DriveConstants.armOutZero);
-                    }*/ else {
-                        arm.setArm(DriveConstants.armSampleRest);
-                        arm.setOutArm(DriveConstants.armOutSampleRest);
+                        if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreLow - 65) {
+                            arm.setArm(DriveConstants.armSampleScoreLow);
+                            arm.setOutArm(50);
+                        } else {
+                            arm.setArm(DriveConstants.armSampleScoreLow);
+                            arm.setOutArm(DriveConstants.armOutSampleScoreLow);
+                        }
+                    } else {
+                        if (ArmSubsystem.outCurrent > 500) {
+                            arm.setArm(ArmSubsystem.upCurrent);
+                            arm.setOutArm(DriveConstants.armOutSampleRest);
+                        } else {
+                            arm.setArm(DriveConstants.armSampleRest);
+                            arm.setOutArm(DriveConstants.armOutSampleRest);
+                        }
                     }
+
+                    if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
+                        claw.grabberPlace();
+                    } else {
+                        if (!driver1.getButton(GamepadKeys.Button.DPAD_DOWN) && !driver2.getButton(GamepadKeys.Button.DPAD_DOWN) && !driver1.getButton(GamepadKeys.Button.DPAD_LEFT) && !driver2.getButton(GamepadKeys.Button.DPAD_LEFT)) {
+                            claw.grabberStop();
+                        }
+                    }
+
+                    if (driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+                        drive.huskyReadDrive(DriveConstants.colorID);
+                        telemetry.addLine("HuskyReading");
+                        if (DriveConstants.xDis < 7 && DriveConstants.yDis < 5) {
+                            huskyTime.reset();
+                            arm.setArm(DriveConstants.armSamplePick);
+                            arm.setOutArm(DriveConstants.armOutSamplePick);
+                            if (huskyTime.seconds() > 2) {
+                                arm.setArm(DriveConstants.armSampleRest);
+                                arm.setOutArm(DriveConstants.armOutSampleRest);
+                            }
+                        }
+                    } else {
+                        drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
+                    }
+
+
+                } else if (!sampleScoring) {
+
+
+
+                    drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
+
+                    if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                        arm.setArm(DriveConstants.armSamplePick);
+                        arm.setOutArm(DriveConstants.armOutSpecimenPick);
+                        claw.grabberPick();
+                    } /*else if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) || driver2.getButton(GamepadKeys.Button.DPAD_LEFT)) {
+                        arm.setArm(DriveConstants.armSamplePickFar);
+                        arm.setOutArm(DriveConstants.armOutSamplePickFar);
+                        claw.grabberPick();
+                    }*/ else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
+                        upIsPressed = true;
+                        timmer.reset();
+                        /*if (ArmSubsystem.upCurrent < DriveConstants.armSpecimenClip - 50) {
+                            arm.setArm(DriveConstants.armSpecimenClip);
+                            arm.setOutArm(0);
+                        } else {
+                            arm.setArm(DriveConstants.armSpecimenClip);
+                            arm.setOutArm(DriveConstants.armSpecimenClip);
+                        }*/
+                    } else if (!upIsPressed) {
+                        /*if (ArmSubsystem.outCurrent > 675) {
+                            arm.setArm(ArmSubsystem.upCurrent);
+                            arm.setOutArm(DriveConstants.armOutSpecimenRest);
+                        } else {*/
+                        arm.setArm(DriveConstants.armSampleRest);
+                        arm.setOutArm(DriveConstants.armOutSpecimenRest);
+                        //}
+                    }
+
+                    if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
+                        claw.SetWristRight();
+                    } else if (driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+                        claw.SetWristCenter();
+                    }
+
 
                     if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
                         claw.grabberPlace();
@@ -163,47 +246,22 @@ public class ExtendoArmDrive extends LinearOpMode {
                         }
                     }
 
-                    if (driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
-                        drive.huskyReadDrive(DriveConstants.colorID);
-                        telemetry.addLine("HuskyReading");
-                    } else {
-                        drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
-                    }
-                } else if (!sampleScoring) {
-
-                    drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
-
-                    if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-                        arm.setArm(DriveConstants.armSamplePick);
-                        arm.setOutArm(DriveConstants.armOutSpecimenPick);
-                        claw.grabberPick();
-                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
-                        arm.setArm(DriveConstants.armSpecimenClip);
-                        arm.setOutArm(DriveConstants.armSpecimenClip);
-                        claw.grabberStop();
-                    } /*else if (driver1.getButton(GamepadKeys.Button.B) || driver2.getButton(GamepadKeys.Button.B)) {
-                        arm.setArm(DriveConstants.armZero);
-                        claw.grabberStop();
-                    }*/ else if (!driver1.getButton(GamepadKeys.Button.A) && !driver2.getButton(GamepadKeys.Button.A)) {
-                        arm.setArm(DriveConstants.armSpecimenRest);
-                        arm.setOutArm(DriveConstants.armOutSpecimenRest);
-                        claw.grabberStop();
+                    if (upIsPressed == true) {
+                        if (timmer.seconds() < 2.5) {
+                            arm.setArm(DriveConstants.armSpecimenClip);
+                            arm.setOutArm(DriveConstants.armOutSpecimenClip);
+                        } else if (timmer.seconds() < 4) {
+                            arm.setArm(DriveConstants.armSpecimenRest);
+                            arm.setOutArm(DriveConstants.armOutSpecimenRest);
+                        } else if (timmer.seconds() < 6) {
+                            arm.setArm(500);
+                            arm.setOutArm(DriveConstants.armOutSpecimenRest);
+                        } else if (timmer.seconds() < 7) {
+                            upIsPressed = false;
+                        }
                     }
 
-
-                    if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) || driver2.getButton(GamepadKeys.Button.DPAD_LEFT)) {
-                        claw.SetWristLeft();
-                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
-                        claw.SetWristRight();
-                    } else if (driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                        claw.SetWristCenter();
-                    }
-
-
-                    if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
-                        claw.grabberPlace();
-                    }
-
+                    //if (!driver1.getButton(GamepadKeys.Button.DPAD_UP) || !driver2.getButton(GamepadKeys.Button.DPAD_UP))
 
                     //updateTelemetry(drive.getDriveTelemetry());
                     //updateTelemetry(arm.getArmTelemetry());
@@ -211,6 +269,17 @@ public class ExtendoArmDrive extends LinearOpMode {
                     telemetry.addLine("Specimen Scoring");
 
                 }
+
+                if (rumble.seconds() > 80 && !warning) {
+                    driver1.gamepad.rumbleBlips(3);
+                    warning = true;
+                } else if (rumble.seconds() > 90 && !endGame) {
+                    driver1.gamepad.rumbleBlips(6);
+                    endGame = true;
+                }
+                telemetry.addData("Timmer For End Game", rumble);
+
+
             //}
             drive.getCurrentPose();
 
@@ -226,5 +295,4 @@ public class ExtendoArmDrive extends LinearOpMode {
             telemetry.addLine(s);
         }
     }
-
 }

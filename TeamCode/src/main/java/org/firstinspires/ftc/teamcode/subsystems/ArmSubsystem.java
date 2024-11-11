@@ -28,7 +28,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final double ticks_in_degree =  5281.1 / 360;
 
     public static double p = 0.05, i = 0, d = 0;
-    public static double f = 1;
+    //public static double f = 2;
 
     public ArmSubsystem(Motor arm, Motor outArm) {
         arm.setInverted(false);
@@ -38,26 +38,26 @@ public class ArmSubsystem extends SubsystemBase {
         arm.resetEncoder();
         outArm.resetEncoder();
         controller = new PIDController(p,i,d);
-    }           
+    }
 
     public void setArm(int Pos) {
         upCurrent = arm.getCurrentPosition();
-        /*targetPos = Pos;
+        targetPos = Pos;
         // set the run mode
 
-        PIDController pid = new PIDController(0.05,40,0);
-        double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
+        PIDController pid = new PIDController(0.008,0,1);
+        //double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
 
         // set the tolerance
-        double tolerence = 13.6;   // allowed maximum error
-        // perform the control loop*/
-        /*if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
-            arm.set(pid.calculate(arm.getCurrentPosition(),Pos) + ff);
+        double tolerence = 1;   // allowed maximum error
+        // perform the control loop
+        if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
+            arm.set(pid.calculate(arm.getCurrentPosition(),Pos)/* + ff*/);
         } else {
             arm.stopMotor(); // stop the motor
-        }*/
+        }
 
-        controller.setPID(p,i,d);
+        /*controller.setPID(p,i,d);
         int armPos = arm.getCurrentPosition();
 
         double pid = controller.calculate(armPos,target);
@@ -66,7 +66,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         double power = pid + ff;
 
-        arm.set(power);
+        arm.set(power);*/
 
     }
 
