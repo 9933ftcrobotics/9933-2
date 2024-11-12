@@ -251,8 +251,8 @@ public class ExtendoArmDrive extends LinearOpMode {
                             arm.setArm(DriveConstants.armSpecimenClip);
                             arm.setOutArm(DriveConstants.armOutSpecimenClip);
                         } else if (timmer.seconds() < 4) {
-                            arm.setArm(DriveConstants.armSpecimenRest);
-                            arm.setOutArm(DriveConstants.armOutSpecimenRest);
+                            arm.setArm(1000);
+                            arm.setOutArm(600);
                         } else if (timmer.seconds() < 6) {
                             arm.setArm(500);
                             arm.setOutArm(DriveConstants.armOutSpecimenRest);

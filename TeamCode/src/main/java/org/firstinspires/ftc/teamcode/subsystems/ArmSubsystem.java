@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static java.lang.Math.abs;
 
+import android.drm.DrmStore;
+
+import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
@@ -96,6 +99,22 @@ public class ArmSubsystem extends SubsystemBase {
     public void armCurrent() {
         DriveConstants.armCurrent = arm.getCurrentPosition();
     }
+
+    /*public Action upArmAuto(int Pos) {
+        PIDController pid = new PIDController(0.008,0,1);
+        //double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
+
+        // set the tolerance
+        double tolerence = 1;   // allowed maximum error
+        // perform the control loop
+        if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
+            arm.set(pid.calculate(arm.getCurrentPosition(),Pos)/* + ff*///);
+        /*} else {
+            arm.stopMotor(); // stop the motor
+        }
+
+        return();
+    }*/
 
 
     public void resetOutArm() {outArm.resetEncoder();}
