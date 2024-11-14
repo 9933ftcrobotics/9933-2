@@ -45,7 +45,7 @@ public class RedLeft extends LinearOpMode {
 
         // vision here that outputs position
         int visionOutputPosition = 1;
-
+//Test
         TrajectoryActionBuilder One = drive.actionBuilder(initialPose)
                 .strafeTo(new Vector2d(4, 38));
         TrajectoryActionBuilder Two = drive.actionBuilder(initialPose)
