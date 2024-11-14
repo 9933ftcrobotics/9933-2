@@ -4,6 +4,9 @@ import static java.lang.Math.abs;
 
 import android.drm.DrmStore;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -14,6 +17,8 @@ import org.firstinspires.ftc.teamcode.DriveConstants;
 public class ArmSubsystem extends SubsystemBase {
     private Motor arm;
     private Motor outArm;
+
+    private boolean outArmInPos, upArmInPos = false;
 
     private PIDController controller;
 
@@ -56,8 +61,10 @@ public class ArmSubsystem extends SubsystemBase {
         // perform the control loop
         if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
             arm.set(pid.calculate(arm.getCurrentPosition(),Pos)/* + ff*/);
+            upArmInPos = false;
         } else {
             arm.stopMotor(); // stop the motor
+            upArmInPos = true;
         }
 
         /*controller.setPID(p,i,d);
@@ -87,8 +94,10 @@ public class ArmSubsystem extends SubsystemBase {
         // perform the control loop
         if (Math.abs(outPos-outArm.getCurrentPosition()) > tolerence) {
             outArm.set(pid.calculate(outArm.getCurrentPosition(),outPos)/* + ff*/);
+            upArmInPos = false;
         } else {
             outArm.stopMotor(); // stop the motor
+            upArmInPos = true;
         }
     }
 
@@ -100,7 +109,7 @@ public class ArmSubsystem extends SubsystemBase {
         DriveConstants.armCurrent = arm.getCurrentPosition();
     }
 
-    /*public Action upArmAuto(int Pos) {
+    public Action upArmAuto(int Pos) {
         PIDController pid = new PIDController(0.008,0,1);
         //double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
 
@@ -108,14 +117,37 @@ public class ArmSubsystem extends SubsystemBase {
         double tolerence = 1;   // allowed maximum error
         // perform the control loop
         if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
-            arm.set(pid.calculate(arm.getCurrentPosition(),Pos)/* + ff*///);
-        /*} else {
+            arm.set(pid.calculate(arm.getCurrentPosition(),Pos)/* + ff*/);
+            outArmInPos = false;
+        } else {
             arm.stopMotor(); // stop the motor
+            outArmInPos = true;
         }
 
-        return();
-    }*/
+        return upArmAuto(Pos);
+    }
 
+    public Action upOutAuto(int Pos) {
+        PIDController pid = new PIDController(0.005,0,1);
+        //double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
+
+        // set the tolerance
+        double tolerence = 1;   // allowed maximum error
+        // perform the control loop
+        if (Math.abs(Pos-outArm.getCurrentPosition()) > tolerence) {
+            outArm.set(pid.calculate(outArm.getCurrentPosition(),Pos)/* + ff*/);
+        } else {
+            outArm.stopMotor(); // stop the motor
+        }
+
+        return upOutAuto(Pos);
+    }
+
+    /*public Action Sleep(int Sec) {
+        wait(1);
+
+        return upOutAuto(Pos);
+    }*/
 
     public void resetOutArm() {outArm.resetEncoder();}
 
@@ -127,6 +159,128 @@ public class ArmSubsystem extends SubsystemBase {
                 ("Target Out Arm Pos: " + String.valueOf(outTargetPos))
 
         };
+    }
+
+    public class UpRest implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            arm.setTargetPosition(DriveConstants.armSampleRest);
+            return !upArmInPos;
+        }
+    }
+    public Action upRest() {
+        return new UpRest();
+    }
+
+    public class UpPick implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            arm.setTargetPosition(DriveConstants.armSamplePick);
+            return !upArmInPos;
+        }
+    }
+    public Action upPick() {
+        return new UpPick();
+    }
+
+    public class UpSpecimen implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            //arm.setTargetPosition(DriveConstants.armSpecimenClip);
+            setArm(DriveConstants.armSpecimenClip);
+            return !upArmInPos;
+        }
+    }
+    public Action upSpecimen() {
+        return new UpSpecimen();
+    }
+
+    public class UpHigh implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            arm.setTargetPosition(DriveConstants.armSampleScoreHigh);
+            return !upArmInPos;
+        }
+    }
+    public Action upHigh() {
+        return new UpHigh();
+    }
+
+
+    public class UpSpecimenScore implements Action {
+        int run = 0;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            //arm.setTargetPosition(DriveConstants.armSpecimenRest);
+            setArm(DriveConstants.armSpecimenClip - 175);
+            run = run + 1;
+            return !upArmInPos && run < 5;
+        }
+    }
+    public Action upSpecimenScore() {
+        return new UpSpecimenScore();
+    }
+
+
+
+
+
+    public class OutRest implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            outArm.setTargetPosition(DriveConstants.armOutSampleRest);
+            return !outArmInPos;
+        }
+    }
+    public Action outRest() {
+        return new OutRest();
+    }
+
+    public class OutPick implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            outArm.setTargetPosition(DriveConstants.armOutSamplePick);
+            return !outArmInPos;
+        }
+    }
+    public Action outPick() {
+        return new OutPick();
+    }
+
+    public class OutSpecimen implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            setOutArm(DriveConstants.armOutSpecimenClip);
+            return !outArmInPos;
+        }
+    }
+    public Action outSpecimen() {
+        return new OutSpecimen();
+    }
+
+    public class OutHigh implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            outArm.setTargetPosition(DriveConstants.armOutSampleScoreHigh);
+            return !outArmInPos;
+        }
+    }
+    public Action outHigh() {
+        return new OutHigh();
+    }
+
+
+    public class OutSpecimenScore implements Action {
+        int Run = 0;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            setOutArm(DriveConstants.armOutSpecimenRest);
+            Run = Run + 1;
+            return !outArmInPos && Run < 15;
+        }
+    }
+    public Action outSpecimenScore() {
+        return new OutSpecimenScore();
     }
 
 }

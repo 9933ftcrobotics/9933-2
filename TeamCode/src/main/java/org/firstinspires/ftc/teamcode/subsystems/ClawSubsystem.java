@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
@@ -29,6 +33,23 @@ public class ClawSubsystem extends SubsystemBase {
 
     public void grabberStop() { grabber.set(0); }
 
+    public Action grabberPlaceAuto() {
+        grabber.set(1);
+        return grabberPlaceAuto();
+    }
+
+    public Action grabberPickAuto() {
+        grabber.set(-1);
+        return grabberPickAuto();
+    }
+
+    public Action grabberStopAuto() {
+        grabber.set(0);
+        return grabberStopAuto();
+    }
+
+
+
     public void SetWristCenter() {
         wrist.setPosition(0);
     }
@@ -39,4 +60,74 @@ public class ClawSubsystem extends SubsystemBase {
 
     public void SetWristRight() { wrist.setPosition(0.3); }
 
+
+    public Action SetWristCenterAuto() {
+        wrist.setPosition(0);
+        return SetWristCenterAuto();
+    }
+
+    public Action SetWristRightAuto() {
+        wrist.setPosition(0.3);
+        return SetWristRightAuto();
+    }
+
+    public class WristRight implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            SetWristRight();
+            return false;
+        }
+    }
+    public Action rightWrist() {
+        return new WristRight();
+    }
+
+
+    public class WristCenter implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            SetWristCenter();
+            return false;
+        }
+    }
+    public Action centerWrist() {
+        return new WristCenter();
+    }
+
+    public class GrabberPick implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            wrist.setPosition(-1);
+            return false;
+        }
+    }
+    public Action pickGrabber() {
+        return new GrabberPick();
+    }
+
+    public class GrabberPlace implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            grabber.set(1);
+            return false;
+        }
+    }
+    public Action placeGrabber() {
+        return new GrabberPlace();
+    }
+
+
+    public class GrabberStop implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            grabber.set(1);
+            return false;
+        }
+    }
+    public Action stopGrabber() {
+        return new GrabberStop();
+    }
+
+
 }
+

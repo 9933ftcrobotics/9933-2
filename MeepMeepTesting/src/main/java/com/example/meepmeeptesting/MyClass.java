@@ -16,12 +16,22 @@ public class MyClass {
                 .build();
 
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(15, 62, Math.toRadians(-90)))
-                .strafeTo(new Vector2d(4, 38))
+                                .strafeTo(new Vector2d(45, 45))
+                                .turnTo(Math.toRadians(45))
+                                .strafeTo(new Vector2d(50, 50))
+                .strafeTo(new Vector2d(35, 35))
+                        .turnTo(Math.toRadians(0))
+                .strafeTo(new Vector2d(38, 26))
+                /*.strafeTo(new Vector2d(4, 38))
                 .strafeTo(new Vector2d(30, 40))
                 .turnTo(Math.toRadians(0))
-                .strafeTo(new Vector2d(38, 28))
+                .strafeTo(new Vector2d(38, 26))
                 .turnTo(Math.toRadians(45))
-                .strafeTo(new Vector2d(50, 50))
+                .strafeTo(new Vector2d(50, 50)) //Ended Here
+                .strafeTo(new Vector2d(38, 28))
+                .turnTo(Math.toRadians(0))
+                .strafeTo(new Vector2d(48, 26))
+                .strafeTo(new Vector2d(57, 26))*/
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
