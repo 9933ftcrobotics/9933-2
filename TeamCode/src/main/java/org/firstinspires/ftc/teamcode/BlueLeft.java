@@ -66,7 +66,7 @@ public class BlueLeft extends LinearOpMode {
                 .turnTo(Math.toRadians(0))
                 .strafeTo(new Vector2d(48, 26));
         TrajectoryActionBuilder Sleep = drive.actionBuilder(initialPose)
-                .waitSeconds(0.75);
+                .waitSeconds(4);
         TrajectoryActionBuilder SleepLong = drive.actionBuilder(initialPose)
                 .waitSeconds(1.25);
         TrajectoryActionBuilder Five = drive.actionBuilder(initialPose)

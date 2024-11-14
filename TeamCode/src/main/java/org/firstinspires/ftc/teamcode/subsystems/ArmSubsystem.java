@@ -162,10 +162,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public class UpRest implements Action {
+        int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setTargetPosition(DriveConstants.armSampleRest);
-            return !upArmInPos;
+            setArm(DriveConstants.armSampleRest);
+            Run = Run + 1;
+            return !upArmInPos && Run < 10;
         }
     }
     public Action upRest() {
@@ -173,10 +175,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public class UpPick implements Action {
+        int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setTargetPosition(DriveConstants.armSamplePick);
-            return !upArmInPos;
+            setArm(DriveConstants.armSamplePick);
+            Run = Run + 1;
+            return !upArmInPos && Run < 6;
         }
     }
     public Action upPick() {
@@ -184,11 +188,13 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public class UpSpecimen implements Action {
+        int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             //arm.setTargetPosition(DriveConstants.armSpecimenClip);
             setArm(DriveConstants.armSpecimenClip);
-            return !upArmInPos;
+            Run = Run + 1;
+            return !upArmInPos && Run < 6;
         }
     }
     public Action upSpecimen() {
@@ -196,10 +202,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public class UpHigh implements Action {
+        int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setTargetPosition(DriveConstants.armSampleScoreHigh);
-            return !upArmInPos;
+            setArm(DriveConstants.armSampleScoreHigh);
+            Run = Run + 1;
+            return !upArmInPos && Run < 6;
         }
     }
     public Action upHigh() {
@@ -226,10 +234,12 @@ public class ArmSubsystem extends SubsystemBase {
 
 
     public class OutRest implements Action {
+        int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            outArm.setTargetPosition(DriveConstants.armOutSampleRest);
-            return !outArmInPos;
+            setOutArm(DriveConstants.armOutSampleRest);
+            Run = Run + 1;
+            return !outArmInPos && Run < 10;
         }
     }
     public Action outRest() {
@@ -237,10 +247,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public class OutPick implements Action {
+        int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            outArm.setTargetPosition(DriveConstants.armOutSamplePick);
-            return !outArmInPos;
+            setOutArm(DriveConstants.armOutSamplePick);
+            Run = Run + 1;
+            return !outArmInPos && Run < 6;
         }
     }
     public Action outPick() {
@@ -248,10 +260,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public class OutSpecimen implements Action {
+        int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             setOutArm(DriveConstants.armOutSpecimenClip);
-            return !outArmInPos;
+            Run = Run + 1;
+            return !outArmInPos && Run < 6;
         }
     }
     public Action outSpecimen() {
@@ -259,10 +273,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public class OutHigh implements Action {
+        int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            outArm.setTargetPosition(DriveConstants.armOutSampleScoreHigh);
-            return !outArmInPos;
+            setOutArm(DriveConstants.armOutSampleScoreHigh);
+            Run = Run + 1;
+            return !outArmInPos && Run < 6;
         }
     }
     public Action outHigh() {
