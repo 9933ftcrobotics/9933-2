@@ -22,10 +22,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class armTest extends OpMode {
     private PIDController controller;
 
-    public static double p = 0.05, i = 0, d = 0;
+    public static double p = 0.008, i = 0, d = 1;
     public static double f = 1;
 
-    public static double p2 = 0.05, i2 = 0, d2 = 0;
+    public static double p2 = 0.005, i2 = 0, d2 = 0;
     public static double f2 = 1;
 
     public static int target = 0;

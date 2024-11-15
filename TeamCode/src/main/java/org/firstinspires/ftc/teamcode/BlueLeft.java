@@ -42,33 +42,42 @@ public class BlueLeft extends LinearOpMode {
         );
 
         Pose2d initialPose = new Pose2d(15, 62, Math.toRadians(-90));
+        Pose2d secondPos = new Pose2d(45, 45, Math.toRadians(-90));
+        Pose2d thirdPos = new Pose2d(52, 52, Math.toRadians(50));
+        Pose2d fourthPos = new Pose2d(35, 35, Math.toRadians(0));
+        Pose2d afterPick = new Pose2d(36, 22, Math.toRadians(0));
+        Pose2d afterScoreOne = new Pose2d(45, 45, Math.toRadians(50));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
 
         TrajectoryActionBuilder One = drive.actionBuilder(initialPose)
-                .strafeTo(new Vector2d(45, 45))
-                .turnTo(Math.toRadians(45))
                 .strafeTo(new Vector2d(45, 45));
-        TrajectoryActionBuilder FirstScore = drive.actionBuilder(initialPose)
-                .strafeTo(new Vector2d(50, 50));
-        TrajectoryActionBuilder Two = drive.actionBuilder(initialPose)
-                .strafeTo(new Vector2d(35, 35))
-                .turnTo(Math.toRadians(0))
-                .strafeTo(new Vector2d(38, 26));
-        TrajectoryActionBuilder ScoreOne = drive.actionBuilder(initialPose)
-                .turnTo(Math.toRadians(45))
+                //.turnTo(Math.toRadians(45))
+                //.strafeTo(new Vector2d(45, 45));
+        TrajectoryActionBuilder FirstScore = drive.actionBuilder(secondPos)
+                .turnTo(Math.toRadians(50))
+                .strafeTo(new Vector2d(51, 51));
+        TrajectoryActionBuilder Two = drive.actionBuilder(thirdPos)
+                .strafeTo(new Vector2d(36, 35))
+                .turnTo(Math.toRadians(0));
+        TrajectoryActionBuilder TwoFinish = drive.actionBuilder(fourthPos)
+                .strafeTo(new Vector2d(36, 22));
+        TrajectoryActionBuilder ScoreOne = drive.actionBuilder(afterPick)
+                .turnTo(Math.toRadians(50))
                 .strafeTo(new Vector2d(45, 45));
-        TrajectoryActionBuilder ScoreTwo = drive.actionBuilder(initialPose)
-                .strafeTo(new Vector2d(50, 50));
+        TrajectoryActionBuilder ScoreTwo = drive.actionBuilder(afterScoreOne)
+                .strafeTo(new Vector2d(51, 51));
         TrajectoryActionBuilder Four = drive.actionBuilder(initialPose)
                 .strafeTo(new Vector2d(38, 28))
                 .turnTo(Math.toRadians(0))
                 .strafeTo(new Vector2d(48, 26));
         TrajectoryActionBuilder Sleep = drive.actionBuilder(initialPose)
-                .waitSeconds(4);
+                .waitSeconds(2);
         TrajectoryActionBuilder SleepLong = drive.actionBuilder(initialPose)
-                .waitSeconds(1.25);
+                .waitSeconds(5);
+        TrajectoryActionBuilder VeryShort = drive.actionBuilder(initialPose)
+                .waitSeconds(0.5);
         TrajectoryActionBuilder Five = drive.actionBuilder(initialPose)
                 .strafeTo(new Vector2d(48, 26))
                 .turnTo(Math.toRadians(0))
@@ -84,12 +93,14 @@ public class BlueLeft extends LinearOpMode {
         Action RunFirst = One.build();
         Action scoreFirst = FirstScore.build();
         Action RunSecond = Two.build();
+        Action RunSecondFinish = TwoFinish.build();
         Action RunScoreOne = ScoreOne.build();
         Action RunScoreTwo = ScoreTwo.build();
         Action RunFourth = Four.build();
         Action Wait = Sleep.build();
         Action WaitLong = SleepLong.build();
         Action Finish = Final.build();
+        Action Short = VeryShort.build();
 
         telemetry.update();
         waitForStart();
@@ -100,59 +111,88 @@ public class BlueLeft extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         //Rotate Wrist
-                        new InstantAction(claw::SetWristRight),
                         new ParallelAction(
-                                //claw.rightWrist(),
-                                //new InstantAction(() -> arm.setArm(DriveConstants.armSpecimenClip)),
-                                //new InstantAction(() -> arm.setOutArm(DriveConstants.armOutSpecimenClip)),
-                                arm.upRest(),
+                                ///arm.upRest(),
+                                arm.upTest(),
                                 arm.outRest()
-                            /*new SequentialAction(
-                                RunFirst
-                            ),
-                            arm.upHigh(),
-                            new SequentialAction(
-                                Wait
-                            ),
-                            arm.outHigh(),
-                            new SequentialAction(
-                                RunSecond
-                            ),
-                            new InstantAction(claw::grabberPlace),
-                                    new SequentialAction(
-                                        Wait
-                                    ),
-                                    arm.outRest(),
-                                new SequentialAction(
-                                        Wait
-                                ),
-                                    arm.upRest(),
-                            new SequentialAction(
-                                RunFourth
-                            ),
-                                arm.upPick(),
-                                arm.outPick(),
-                                new InstantAction(claw::grabberPick),
-                                new SequentialAction(
-                                        Wait
-                                ),
-                                new InstantAction(claw::grabberStop),
-                            new SequentialAction(
-                                RunScoreOne
-                            )*/
                         ),
                         new InstantAction(claw::SetWristCenter),
                         RunFirst,
                         new ParallelAction(
-                            arm.upHigh()
+                            arm.upHigh(),
+                                arm.outHigh(),
+                                scoreFirst
+                        ),
+                        //Wait,
+                        /*new ParallelAction(
+                            arm.outHigh()
+                        ),*/
+                        //WaitLong
+                        new InstantAction(claw::grabberPlace),
+                        Wait,
+                        //RunSecond,
+                        new ParallelAction(
+                                arm.outRest()
+                                //new InstantAction(arm::stopUpDown)
+                        ),
+                        new ParallelAction(
+                                new InstantAction(arm::stopUpDown)
+                        ),
+                        new ParallelAction(
+                                //arm.outRest(),
+                                RunSecond,
+                                new InstantAction(claw::grabberStop)
+                                //new InstantAction(arm::stopUpDown)
+                        ),
+                        new ParallelAction(
+                                arm.outRest(),
+                                //new InstantAction(arm::stopUpDown),
+                                RunSecondFinish,
+                                //new InstantAction(claw::grabberStop),
+                                new InstantAction(claw::grabberPick)
+                        ),
+                        //new InstantAction(claw::grabberPick),
+                        new ParallelAction(
+                                arm.outPick(),
+                                arm.upPick()
+                        ),
+                        new ParallelAction(
+                                new InstantAction(claw::grabberStop),
+                                RunScoreOne,
+                                arm.upHigh()
+                        ),
+                        new ParallelAction(
+                                RunScoreTwo,
+                                arm.outHigh()
+                        ),
+                        new InstantAction(claw::grabberPlace),
+                        Wait
+                        //arm.upRest()
+                        /*new ParallelAction(
+                                arm.upPick(),
+                                arm.outPick(),
+                                new InstantAction(claw::grabberPick)
                         ),
                         Wait,
                         new ParallelAction(
-                            arm.outHigh()
+                                arm.upRest(),
+                                arm.upRest()
+                        )
+                        /*new ParallelAction(
+                                arm.upHigh(),
+                                arm.upHigh(),
+                                RunScoreTwo
                         ),
-                        scoreFirst,
                         new InstantAction(claw::grabberPlace),
                         Wait,
+                        //Finish,
+                        new ParallelAction(
+                                arm.outRest(),
+                                Finish
+                        ),
+                        arm.upRest(),
+                        Wait
+                        /*Wait,
                         new ParallelAction(
                                 arm.outRest()
                         ),

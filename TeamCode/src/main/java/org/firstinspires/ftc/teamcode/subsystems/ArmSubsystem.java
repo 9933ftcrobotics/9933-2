@@ -28,7 +28,7 @@ public class ArmSubsystem extends SubsystemBase {
     public static int outCurrent;
     public static int upCurrent;
 
-    //public static double f = 1;
+    public static double f = 1;
 
     public static int target = 0;
     public static int outTarget = 0;
@@ -54,13 +54,13 @@ public class ArmSubsystem extends SubsystemBase {
         // set the run mode
 
         PIDController pid = new PIDController(0.008,0,1);
-        //double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
+        double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
 
         // set the tolerance
         double tolerence = 1;   // allowed maximum error
         // perform the control loop
         if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
-            arm.set(pid.calculate(arm.getCurrentPosition(),Pos)/* + ff*/);
+            arm.set(pid.calculate(arm.getCurrentPosition(),Pos) + ff);
             upArmInPos = false;
         } else {
             arm.stopMotor(); // stop the motor
@@ -107,6 +107,14 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void armCurrent() {
         DriveConstants.armCurrent = arm.getCurrentPosition();
+    }
+
+    public void stopUpDown() {
+        arm.stopMotor();
+    }
+
+    public void stopInOut() {
+        outArm.stopMotor();
     }
 
     public Action upArmAuto(int Pos) {
@@ -167,7 +175,7 @@ public class ArmSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             setArm(DriveConstants.armSampleRest);
             Run = Run + 1;
-            return !upArmInPos && Run < 10;
+            return !upArmInPos && Run < 100;
         }
     }
     public Action upRest() {
@@ -180,7 +188,7 @@ public class ArmSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             setArm(DriveConstants.armSamplePick);
             Run = Run + 1;
-            return !upArmInPos && Run < 6;
+            return !upArmInPos && Run < 100;
         }
     }
     public Action upPick() {
@@ -207,7 +215,7 @@ public class ArmSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             setArm(DriveConstants.armSampleScoreHigh);
             Run = Run + 1;
-            return !upArmInPos && Run < 6;
+            return !upArmInPos && Run < 125; //Time off?
         }
     }
     public Action upHigh() {
@@ -239,7 +247,7 @@ public class ArmSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             setOutArm(DriveConstants.armOutSampleRest);
             Run = Run + 1;
-            return !outArmInPos && Run < 10;
+            return !outArmInPos && Run < 100;
         }
     }
     public Action outRest() {
@@ -250,9 +258,9 @@ public class ArmSubsystem extends SubsystemBase {
         int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            setOutArm(DriveConstants.armOutSamplePick);
+            setOutArm(DriveConstants.armOutSamplePick + 50);
             Run = Run + 1;
-            return !outArmInPos && Run < 6;
+            return !outArmInPos && Run < 100;
         }
     }
     public Action outPick() {
@@ -278,7 +286,7 @@ public class ArmSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             setOutArm(DriveConstants.armOutSampleScoreHigh);
             Run = Run + 1;
-            return !outArmInPos && Run < 6;
+            return !outArmInPos && Run < 130;
         }
     }
     public Action outHigh() {
@@ -297,6 +305,19 @@ public class ArmSubsystem extends SubsystemBase {
     }
     public Action outSpecimenScore() {
         return new OutSpecimenScore();
+    }
+
+    public class UpSeven implements Action {
+        int Run = 0;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            setArm(700);
+            Run = Run + 1;
+            return !outArmInPos && Run < 50;
+        }
+    }
+    public Action upTest() {
+        return new UpSeven();
     }
 
 }
