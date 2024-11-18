@@ -23,9 +23,9 @@ public class DriveConstants {
 
 
     public static int armSamplePick = 0;
-    public static int armSamplePickFar = 400;
-    public static int armSampleRest = 200;
-    public static int armSampleScoreLow = 1000;
+    public static int armSamplePickFar = 220;
+    public static int armSampleRest = 150;
+    public static int armSampleScoreLow = 1100;
     public static int armSampleScoreHigh = 1500;
 
     public static int armZero = 100;
@@ -34,8 +34,8 @@ public class DriveConstants {
     public static int armSpecimenClip = 1100;
     public static int armSpecimenRest = 1100;
 
-    public static int armOutSamplePick = 420;
-    public static int armOutSamplePickFar = 1750;
+    public static int armOutSamplePick = 550;
+    public static int armOutSamplePickFar = 1500;
     public static int armOutSampleRest = 100;
     public static int armOutSampleScoreLow = 1320;
     public static int armOutSampleScoreHigh = 2200;

@@ -15,9 +15,9 @@ public class MyClass {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(15, 62, Math.toRadians(-90)))
-                                .strafeTo(new Vector2d(45, 45))
-                                .turnTo(Math.toRadians(45))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-15, 62, Math.toRadians(-90)))
+                                .strafeTo(new Vector2d(-55, 55))
+                                /*.turnTo(Math.toRadians(45))
                                 .strafeTo(new Vector2d(50, 50))
                 .strafeTo(new Vector2d(35, 35))
                         .turnTo(Math.toRadians(0))

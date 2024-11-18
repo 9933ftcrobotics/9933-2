@@ -20,6 +20,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     private boolean outArmInPos, upArmInPos = false;
 
+    double outPower = 0;
+
     private PIDController controller;
 
     private double targetPos = 0;
@@ -86,14 +88,18 @@ public class ArmSubsystem extends SubsystemBase {
         outTargetPos = outPos;
         // set the run mode
 
-        PIDController pid = new PIDController(0.005,0,0);
+        PIDController pid = new PIDController(0.004,0,0);
         //double ff = Math.cos(Math.toRadians(outPos / ticks_in_degree))*f;
 
         // set the tolerance
         double tolerence = 13.6;   // allowed maximum error
         // perform the control loop
         if (Math.abs(outPos-outArm.getCurrentPosition()) > tolerence) {
-            outArm.set(pid.calculate(outArm.getCurrentPosition(),outPos)/* + ff*/);
+            outPower = pid.calculate(outArm.getCurrentPosition(),outPos)/* + ff*/;
+            if (outPower > 0.6) {
+                outPower = 0.6;
+            }
+            outArm.set(outPower);
             upArmInPos = false;
         } else {
             outArm.stopMotor(); // stop the motor
@@ -103,6 +109,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void powerArm(double Power) {
         arm.set(Power);
+    }
+
+    public void powerOutArm(double Power) {
+        outArm.set(Power);
     }
 
     public void armCurrent() {
@@ -117,39 +127,7 @@ public class ArmSubsystem extends SubsystemBase {
         outArm.stopMotor();
     }
 
-    public Action upArmAuto(int Pos) {
-        PIDController pid = new PIDController(0.008,0,1);
-        //double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
 
-        // set the tolerance
-        double tolerence = 1;   // allowed maximum error
-        // perform the control loop
-        if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
-            arm.set(pid.calculate(arm.getCurrentPosition(),Pos)/* + ff*/);
-            outArmInPos = false;
-        } else {
-            arm.stopMotor(); // stop the motor
-            outArmInPos = true;
-        }
-
-        return upArmAuto(Pos);
-    }
-
-    public Action upOutAuto(int Pos) {
-        PIDController pid = new PIDController(0.005,0,1);
-        //double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
-
-        // set the tolerance
-        double tolerence = 1;   // allowed maximum error
-        // perform the control loop
-        if (Math.abs(Pos-outArm.getCurrentPosition()) > tolerence) {
-            outArm.set(pid.calculate(outArm.getCurrentPosition(),Pos)/* + ff*/);
-        } else {
-            outArm.stopMotor(); // stop the motor
-        }
-
-        return upOutAuto(Pos);
-    }
 
     /*public Action Sleep(int Sec) {
         wait(1);
@@ -158,6 +136,7 @@ public class ArmSubsystem extends SubsystemBase {
     }*/
 
     public void resetOutArm() {outArm.resetEncoder();}
+    public void resetArm() {arm.resetEncoder();}
 
     public String[] getArmTelemetry() {
         return new String[]{
@@ -202,7 +181,7 @@ public class ArmSubsystem extends SubsystemBase {
             //arm.setTargetPosition(DriveConstants.armSpecimenClip);
             setArm(DriveConstants.armSpecimenClip);
             Run = Run + 1;
-            return !upArmInPos && Run < 6;
+            return !upArmInPos && Run < 125;
         }
     }
     public Action upSpecimen() {
@@ -213,7 +192,7 @@ public class ArmSubsystem extends SubsystemBase {
         int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            setArm(DriveConstants.armSampleScoreHigh);
+            setArm(DriveConstants.armSampleScoreHigh + 25);
             Run = Run + 1;
             return !upArmInPos && Run < 125; //Time off?
         }
@@ -228,9 +207,9 @@ public class ArmSubsystem extends SubsystemBase {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             //arm.setTargetPosition(DriveConstants.armSpecimenRest);
-            setArm(DriveConstants.armSpecimenClip - 175);
+            setArm(DriveConstants.armSpecimenClip - 200);
             run = run + 1;
-            return !upArmInPos && run < 5;
+            return !upArmInPos && run < 75;
         }
     }
     public Action upSpecimenScore() {
@@ -273,7 +252,7 @@ public class ArmSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             setOutArm(DriveConstants.armOutSpecimenClip);
             Run = Run + 1;
-            return !outArmInPos && Run < 6;
+            return !outArmInPos && Run < 75;
         }
     }
     public Action outSpecimen() {
@@ -300,7 +279,7 @@ public class ArmSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             setOutArm(DriveConstants.armOutSpecimenRest);
             Run = Run + 1;
-            return !outArmInPos && Run < 15;
+            return !outArmInPos && Run < 75;
         }
     }
     public Action outSpecimenScore() {
@@ -318,6 +297,34 @@ public class ArmSubsystem extends SubsystemBase {
     }
     public Action upTest() {
         return new UpSeven();
+    }
+
+
+    public class UpZero implements Action {
+        int Run = 0;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            setArm(0);
+            Run = Run + 1;
+            return !outArmInPos && Run < 50;
+        }
+    }
+    public Action upZero() {
+        return new UpZero();
+    }
+
+
+    public class OutZero implements Action {
+        int Run = 0;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            setOutArm(0);
+            Run = Run + 1;
+            return !outArmInPos && Run < 50;
+        }
+    }
+    public Action outZero() {
+        return new OutZero();
     }
 
 }

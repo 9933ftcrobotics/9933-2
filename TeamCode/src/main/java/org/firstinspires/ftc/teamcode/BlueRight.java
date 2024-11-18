@@ -26,8 +26,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
-@Autonomous(name = "BlueLeft", group = "Autonomous")
-public class BlueLeft extends LinearOpMode {
+@Autonomous(name = "BlueRight", group = "Autonomous")
+public class BlueRight extends LinearOpMode {
 
 
     @Override
@@ -41,29 +41,28 @@ public class BlueLeft extends LinearOpMode {
                 new SimpleServo(hardwareMap, "wrist", 0,1)
         );
 
-        Pose2d initialPose = new Pose2d(15, 62, Math.toRadians(-90));
-        Pose2d secondPos = new Pose2d(45, 45, Math.toRadians(-90));
-        Pose2d thirdPos = new Pose2d(52, 52, Math.toRadians(50));
-        Pose2d fourthPos = new Pose2d(35, 35, Math.toRadians(0));
+        Pose2d initialPose = new Pose2d(-15, 62, Math.toRadians(-90));
+        Pose2d secondPos = new Pose2d(-5, 36, Math.toRadians(-90));
+        Pose2d thirdPos = new Pose2d(-5, 45, Math.toRadians(-90));
+        Pose2d fourthPos = new Pose2d(-36, 35, Math.toRadians(175));
         Pose2d afterPick = new Pose2d(36, 22, Math.toRadians(0));
         Pose2d afterScoreOne = new Pose2d(45, 45, Math.toRadians(50));
-        Pose2d finishPos = new Pose2d(51, 51, Math.toRadians(50)); //TODO: Will need to change is update Trajectory
+        Pose2d finishPos = new Pose2d(-36, 22, Math.toRadians(175)); //TODO: Will need to change is update Trajectory
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
 
         TrajectoryActionBuilder One = drive.actionBuilder(initialPose)
-                .strafeTo(new Vector2d(45, 45));
-                //.turnTo(Math.toRadians(45))
-                //.strafeTo(new Vector2d(45, 45));
+                .strafeTo(new Vector2d(-5, 36));
+        //.turnTo(Math.toRadians(45))
+        //.strafeTo(new Vector2d(45, 45));
         TrajectoryActionBuilder FirstScore = drive.actionBuilder(secondPos)
-                .turnTo(Math.toRadians(50))
-                .strafeTo(new Vector2d(51, 51));
+                .strafeTo(new Vector2d(-5, 45));
         TrajectoryActionBuilder Two = drive.actionBuilder(thirdPos)
-                .strafeTo(new Vector2d(36, 35))
-                .turnTo(Math.toRadians(0));
+                .strafeTo(new Vector2d(-36, 35))
+                .turnTo(Math.toRadians(175));
         TrajectoryActionBuilder TwoFinish = drive.actionBuilder(fourthPos)
-                .strafeTo(new Vector2d(36, 22));
+                .strafeTo(new Vector2d(-34, 23));
         TrajectoryActionBuilder ScoreOne = drive.actionBuilder(afterPick)
                 .strafeTo(new Vector2d(45, 45))
                 .turnTo(Math.toRadians(50));
@@ -78,7 +77,7 @@ public class BlueLeft extends LinearOpMode {
         TrajectoryActionBuilder SleepLong = drive.actionBuilder(initialPose)
                 .waitSeconds(2);
         TrajectoryActionBuilder SleepReallyLong = drive.actionBuilder(initialPose)
-                .waitSeconds(10);
+                .waitSeconds(30);
         TrajectoryActionBuilder VeryShort = drive.actionBuilder(initialPose)
                 .waitSeconds(0.5);
         TrajectoryActionBuilder Five = drive.actionBuilder(initialPose)
@@ -86,8 +85,9 @@ public class BlueLeft extends LinearOpMode {
                 .turnTo(Math.toRadians(0))
                 .strafeTo(new Vector2d(57, 26));
         TrajectoryActionBuilder Final = drive.actionBuilder(finishPos)
-                .strafeTo(new Vector2d(40, 40))
-                .turnTo(Math.toRadians(-95)); ///90?
+                //.strafeTo(new Vector2d(-5, 45))
+                .strafeTo(new Vector2d(-53, 58))
+                        .turnTo(Math.toRadians(-90));
 
 
         // actions that need to happen on init; for instance, a claw tightening.
@@ -116,76 +116,48 @@ public class BlueLeft extends LinearOpMode {
                 new SequentialAction(
                         //Rotate Wrist
                         new ParallelAction(
-                                ///arm.upRest(),
-                                arm.upTest(),
+                                arm.upSpecimen(),
+                                arm.outSpecimen()
+                        ),
+                        //Wait,
+                        new ParallelAction(
+                                RunFirst,
+                                arm.upSpecimen(),
+                                arm.outSpecimen()
+                        ),
+                        //Wait,
+                        new ParallelAction(
+                                scoreFirst,
+                                arm.upSpecimenScore(),
+                                arm.outSpecimenScore()
+                        ),
+                        new ParallelAction(
+                                RunSecond,
+                                arm.upRest(),
                                 arm.outRest()
                         ),
                         new InstantAction(claw::SetWristCenter),
-                        RunFirst,
                         new ParallelAction(
-                            arm.upHigh(),
-                                arm.outHigh(),
-                                scoreFirst
-                        ),
-                        //Wait,
-                        /*new ParallelAction(
-                            arm.outHigh()
-                        ),*/
-                        //WaitLong
-                        new InstantAction(claw::grabberPlace),
-                        Wait,
-                        //RunSecond,
-                        new ParallelAction(
+                               RunSecondFinish,
+                                arm.upRest(),
                                 arm.outRest()
-                                //new InstantAction(arm::stopUpDown)
                         ),
                         new ParallelAction(
-                                new InstantAction(arm::stopUpDown)
+                                new InstantAction(claw::grabberPick),
+                                arm.upPick(),
+                                arm.outPick()
                         ),
-                        new ParallelAction(
-                                //arm.outRest(),
-                                RunSecond,
-                                new InstantAction(claw::grabberStop)
-                                //new InstantAction(arm::stopUpDown)
-                        ),
-                        new ParallelAction(
-                                arm.outRest(),
-                                //new InstantAction(arm::stopUpDown),
-                                RunSecondFinish,
-                                //new InstantAction(claw::grabberStop),
-                                new InstantAction(claw::grabberPick)
-                        ),
-                        //new InstantAction(claw::grabberPick),
-                        new ParallelAction(
-                                arm.outPick(),
-                                arm.upPick()
-                        ),
-                        new ParallelAction(
-                                new InstantAction(claw::grabberStop),
-                                RunScoreOne,
-                                arm.upHigh()
-                        ),
-                        new ParallelAction(
-                                RunScoreTwo,
-                                arm.outHigh(),
-                                arm.upHigh()
-                        ),
-                        new ParallelAction(
-                                new InstantAction(claw::grabberPlace),
-                                arm.outHigh(),
-                                arm.upHigh()
-                        ),
-                        //new InstantAction(claw::grabberPlace),
                         Wait,
+                        new InstantAction(claw::grabberStop),
                         new ParallelAction(
                                 Finish,
-                                new InstantAction(claw::grabberStop),
-                                arm.outZero()
+                                arm.upRest(),
+                                arm.outRest()
                         ),
                         new ParallelAction(
-                                arm.upZero(),
+                                WaitReallyLong,
                                 arm.outZero(),
-                                WaitReallyLong
+                                arm.upZero()
                         )
                         //WaitLong
                         //arm.upRest()

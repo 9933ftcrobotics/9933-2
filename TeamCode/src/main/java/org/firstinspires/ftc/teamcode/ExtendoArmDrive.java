@@ -33,6 +33,7 @@ public class ExtendoArmDrive extends LinearOpMode {
     private static ElapsedTime timmer = new ElapsedTime();
     private static ElapsedTime rumble = new ElapsedTime();
     private static ElapsedTime huskyTime = new ElapsedTime();
+    private static ElapsedTime reset = new ElapsedTime();
     boolean warning = false;
     boolean endGame = false;
 
@@ -46,8 +47,15 @@ public class ExtendoArmDrive extends LinearOpMode {
 
     boolean leftBumperPressed = false;
     boolean rightBumperPressed = false;
+    boolean retractArm = false;
+    boolean retractUpArm = false;
 
     boolean started = false;
+
+    int farPickPos = 1;
+    boolean rightStickPressed = false;
+
+    double leftY, leftX, rightX;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -91,6 +99,15 @@ public class ExtendoArmDrive extends LinearOpMode {
         //camera.initAprilTag();
 
         while (!isStopRequested()) {
+            if (!driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
+                rightStickPressed = false;
+            }
+
+            rightX = driver1.getRightX();
+            leftX = driver1.getLeftX();
+            leftY = driver1.getLeftY();
+
+
             arm.armCurrent();
             telemetry.addData("Current", DriveConstants.armCurrent);
             telemetry.addData("Target", ArmSubsystem.target);
@@ -129,46 +146,88 @@ public class ExtendoArmDrive extends LinearOpMode {
 
 
             //if (started) {
+            if (driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.05) {
+                arm.powerOutArm(-driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+                retractArm = true;
+            } else if (driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.05) {
+                arm.powerOutArm(-driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+                retractArm = true;
+            } else {
+                retractArm = false;
+            }
+
+            /*if (driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.05) {
+                arm.powerArm(driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+                retractUpArm = true;
+                reset.reset();
+            } else if (driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.05) {
+                arm.powerArm(driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+                retractUpArm = true;
+                reset.reset();
+            } else if (reset.time() > 1) {
+                retractUpArm = false;
+            }*/
+
+            if (driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) || driver2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+                arm.resetOutArm();
+            }
+
+            if (driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON) || driver2.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)) {
+                arm.resetArm();
+            }
 
                 if (sampleScoring) {
                     claw.SetWristCenter();
 
-                    if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-                        arm.setArm(DriveConstants.armSamplePick);
-                        arm.setOutArm(DriveConstants.armOutSamplePick);
-                        claw.grabberPick();
-                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) || driver2.getButton(GamepadKeys.Button.DPAD_LEFT)) {
+                    if (!retractArm && !retractUpArm) {
+                        if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                            drive.drive(leftX * 0.75, leftY * 0.75, rightX * 0.75, true);
+                            arm.setArm(DriveConstants.armSamplePick);
+                            arm.setOutArm(DriveConstants.armOutSamplePick);
+                            claw.grabberPick();
+                        } else if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) || driver2.getButton(GamepadKeys.Button.DPAD_LEFT)) {
+                            drive.drive(leftX * 0.75, leftY * 0.75, rightX * 0.75, true);
                         /*if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 60) {
                             arm.setArm(DriveConstants.armSamplePickFar);
                             arm.setOutArm(50);
                         } else {*/
-                            arm.setArm(DriveConstants.armSamplePickFar);
-                            arm.setOutArm(DriveConstants.armOutSamplePickFar);
+                            /*if (driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON) && !rightStickPressed) {
+                                arm.setArm(DriveConstants.armSamplePickFar + 25);
+                                arm.setOutArm(DriveConstants.armOutSamplePickFar + 50);
+                                rightStickPressed = true;
+                            } else {*/
+                                arm.setArm(DriveConstants.armSamplePickFar);
+                                arm.setOutArm(DriveConstants.armOutSamplePickFar);
+                            //}
                             claw.grabberPick();
-                        //}
-                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
-                        if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 60) {
-                            arm.setArm(DriveConstants.armSampleScoreHigh);
-                            arm.setOutArm(50);
+                            //}
+                        } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
+                            drive.drive(leftX * 0.5, leftY * 0.5, rightX * 0.5, true);
+                            if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 60) {
+                                arm.setArm(DriveConstants.armSampleScoreHigh);
+                                arm.setOutArm(50);
+                            } else {
+                                arm.setArm(DriveConstants.armSampleScoreHigh);
+                                arm.setOutArm(DriveConstants.armOutSampleScoreHigh);
+                            }
+                        } else if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
+                            drive.drive(leftX * 0.5, leftY * 0.5, rightX * 0.5, true);
+                            if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreLow - 65) {
+                                arm.setArm(DriveConstants.armSampleScoreLow);
+                                arm.setOutArm(50);
+                            } else {
+                                arm.setArm(DriveConstants.armSampleScoreLow);
+                                arm.setOutArm(DriveConstants.armOutSampleScoreLow);
+                            }
                         } else {
-                            arm.setArm(DriveConstants.armSampleScoreHigh);
-                            arm.setOutArm(DriveConstants.armOutSampleScoreHigh);
-                        }
-                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
-                        if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreLow - 65) {
-                            arm.setArm(DriveConstants.armSampleScoreLow);
-                            arm.setOutArm(50);
-                        } else {
-                            arm.setArm(DriveConstants.armSampleScoreLow);
-                            arm.setOutArm(DriveConstants.armOutSampleScoreLow);
-                        }
-                    } else {
-                        if (ArmSubsystem.outCurrent > 500) {
-                            arm.setArm(ArmSubsystem.upCurrent);
-                            arm.setOutArm(DriveConstants.armOutSampleRest);
-                        } else {
-                            arm.setArm(DriveConstants.armSampleRest);
-                            arm.setOutArm(DriveConstants.armOutSampleRest);
+                            drive.drive(leftX, leftY, rightX, true);
+                            if (ArmSubsystem.outCurrent > 500) {
+                                arm.setArm(ArmSubsystem.upCurrent);
+                                arm.setOutArm(DriveConstants.armOutSampleRest);
+                            } else {
+                                arm.setArm(DriveConstants.armSampleRest);
+                                arm.setOutArm(DriveConstants.armOutSampleRest);
+                            }
                         }
                     }
 
@@ -180,7 +239,7 @@ public class ExtendoArmDrive extends LinearOpMode {
                         }
                     }
 
-                    if (driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+                    /*if (driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
                         drive.huskyReadDrive(DriveConstants.colorID);
                         telemetry.addLine("HuskyReading");
                         if (DriveConstants.xDis < 7 && DriveConstants.yDis < 5) {
@@ -192,28 +251,29 @@ public class ExtendoArmDrive extends LinearOpMode {
                                 arm.setOutArm(DriveConstants.armOutSampleRest);
                             }
                         }
-                    } else {
-                        drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
-                    }
+                    } else {*/
+                        //drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
+                    //}
 
 
                 } else if (!sampleScoring) {
 
 
 
-                    drive.drive(driver1.getLeftX(), driver1.getLeftY(), driver1.getRightX(), true);
-
-                    if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-                        arm.setArm(DriveConstants.armSamplePick);
-                        arm.setOutArm(DriveConstants.armOutSpecimenPick);
-                        claw.grabberPick();
-                    } /*else if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) || driver2.getButton(GamepadKeys.Button.DPAD_LEFT)) {
+                    if (!retractArm && !retractUpArm) {
+                        if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                            drive.drive(leftX * 0.75, leftY * 0.75, rightX * 0.75, true);
+                            arm.setArm(DriveConstants.armSamplePick);
+                            arm.setOutArm(DriveConstants.armOutSpecimenPick);
+                            claw.grabberPick();
+                        } /*else if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) || driver2.getButton(GamepadKeys.Button.DPAD_LEFT)) {
                         arm.setArm(DriveConstants.armSamplePickFar);
                         arm.setOutArm(DriveConstants.armOutSamplePickFar);
                         claw.grabberPick();
                     }*/ else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
-                        upIsPressed = true;
-                        timmer.reset();
+                            drive.drive(leftX, leftY, rightX, true);
+                            upIsPressed = true;
+                            timmer.reset();
                         /*if (ArmSubsystem.upCurrent < DriveConstants.armSpecimenClip - 50) {
                             arm.setArm(DriveConstants.armSpecimenClip);
                             arm.setOutArm(0);
@@ -221,14 +281,16 @@ public class ExtendoArmDrive extends LinearOpMode {
                             arm.setArm(DriveConstants.armSpecimenClip);
                             arm.setOutArm(DriveConstants.armSpecimenClip);
                         }*/
-                    } else if (!upIsPressed) {
+                        } else if (!upIsPressed) {
+                            drive.drive(leftX, leftY, rightX, true);
                         /*if (ArmSubsystem.outCurrent > 675) {
                             arm.setArm(ArmSubsystem.upCurrent);
                             arm.setOutArm(DriveConstants.armOutSpecimenRest);
                         } else {*/
-                        arm.setArm(DriveConstants.armSampleRest);
-                        arm.setOutArm(DriveConstants.armOutSpecimenRest);
-                        //}
+                            arm.setArm(DriveConstants.armSampleRest);
+                            arm.setOutArm(DriveConstants.armOutSpecimenRest);
+                            //}
+                        }
                     }
 
                     if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
@@ -247,6 +309,7 @@ public class ExtendoArmDrive extends LinearOpMode {
                     }
 
                     if (upIsPressed == true) {
+                        drive.drive(leftX, leftY, rightX, true);
                         if (timmer.seconds() < 2.5) {
                             arm.setArm(DriveConstants.armSpecimenClip);
                             arm.setOutArm(DriveConstants.armOutSpecimenClip);
