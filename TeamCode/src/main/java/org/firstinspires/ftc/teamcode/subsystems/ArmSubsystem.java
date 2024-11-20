@@ -327,4 +327,31 @@ public class ArmSubsystem extends SubsystemBase {
         return new OutZero();
     }
 
+
+    public class OutPickFar implements Action {
+        int Run = 0;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            setOutArm(DriveConstants.armOutSamplePickFar);
+            Run = Run + 1;
+            return !outArmInPos && Run < 50;
+        }
+    }
+    public Action outPickFar() {
+        return new OutPickFar();
+    }
+
+    public class UpPickFar implements Action {
+        int Run = 0;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            setOutArm(DriveConstants.armSamplePickFar);
+            Run = Run + 1;
+            return !outArmInPos && Run < 50;
+        }
+    }
+    public Action upPickFar() {
+        return new UpPickFar();
+    }
+
 }
