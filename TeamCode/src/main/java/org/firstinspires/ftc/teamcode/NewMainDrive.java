@@ -24,6 +24,8 @@ import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 
 @TeleOp
 public class NewMainDrive extends LinearOpMode {
+    boolean wristCenter = true;
+
 
     // This variable determines whether the following program
     // uses field-centric or robot-centric driving styles. The
@@ -130,13 +132,10 @@ public class NewMainDrive extends LinearOpMode {
                 YIsPressed = false;
             }
 
-            /*if (driver1.getButton(GamepadKeys.Button.A) && !started || driver2.getButton(GamepadKeys.Button.A) && !started) {
-                started = true;
-            }*/
 
 
 
-            /*if (driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.05) {
+            if (driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.05) {
                 arm.powerOutArm(-driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
                 retractArm = true;
             } else if (driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.05) {
@@ -144,15 +143,14 @@ public class NewMainDrive extends LinearOpMode {
                 retractArm = true;
             } else {
                 retractArm = false;
-            }*/
+            }
 
 
-            /*if (driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) || driver2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+            if (driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
                 arm.resetOutArm();
-            }*/
+            }
 
 
-            if (sampleScoring) {
                 claw.SetWristCenter();
 
                 if (!retractArm && !retractUpArm) {
@@ -216,6 +214,21 @@ public class NewMainDrive extends LinearOpMode {
                     }
                 }
 
+
+                //Move Wrist
+                if (driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) || driver2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+                    if (wristCenter && !leftBumperPressed) {
+                        claw.SetWristLeft();
+                        leftBumperPressed = true;
+                    } else if (!wristCenter && !leftBumperPressed) {
+                        claw.SetWristCenter();
+                        leftBumperPressed = true;
+                    }
+                } else if (!driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && !driver2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+                    leftBumperPressed = false;
+                }
+
+
                 if (upIsPressed == true) {
                     drive.drive(leftX, leftY, rightX, true);
                     if (timmer.seconds() < 2.5) {
@@ -234,69 +247,7 @@ public class NewMainDrive extends LinearOpMode {
 
 
 
-            } /*(else if (!sampleScoring) {
 
-
-
-                if (!retractArm && !retractUpArm) {
-                    if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-                        drive.drive(leftX * 0.75, leftY * 0.75, rightX * 0.75, true);
-                        arm.setArm(DriveConstants.armSamplePick);
-                        arm.setOutArm(DriveConstants.armOutSpecimenPick);
-                        claw.grabberPick();
-                    } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
-                        drive.drive(leftX, leftY, rightX, true);
-                        upIsPressed = true;
-                        timmer.reset();
-
-                    } else if (!upIsPressed) {
-                        drive.drive(leftX, leftY, rightX, true);
-
-                        arm.setArm(DriveConstants.armSampleRest);
-                        arm.setOutArm(DriveConstants.armOutSpecimenRest);
-                        //}
-                    }
-                }
-
-                if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) || driver2.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
-                    claw.SetWristRight();
-                } else if (driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                    claw.SetWristCenter();
-                }
-
-
-                if (driver1.getButton(GamepadKeys.Button.A) || driver2.getButton(GamepadKeys.Button.A)) {
-                    claw.grabberPlace();
-                } else {
-                    if (!driver1.getButton(GamepadKeys.Button.DPAD_DOWN) && !driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-                        claw.grabberStop();
-                    }
-                }
-
-                if (upIsPressed == true) {
-                    drive.drive(leftX, leftY, rightX, true);
-                    if (timmer.seconds() < 2.5) {
-                        arm.setArm(DriveConstants.armSpecimenClip);
-                        arm.setOutArm(DriveConstants.armOutSpecimenClip);
-                    } else if (timmer.seconds() < 4) {
-                        arm.setArm(1000);
-                        arm.setOutArm(600);
-                    } else if (timmer.seconds() < 6) {
-                        arm.setArm(500);
-                        arm.setOutArm(DriveConstants.armOutSpecimenRest);
-                    } else if (timmer.seconds() < 7) {
-                        upIsPressed = false;
-                    }
-                }
-
-                //if (!driver1.getButton(GamepadKeys.Button.DPAD_UP) || !driver2.getButton(GamepadKeys.Button.DPAD_UP))
-
-                //updateTelemetry(drive.getDriveTelemetry());
-                //updateTelemetry(arm.getArmTelemetry());
-                telemetry.update();
-                telemetry.addLine("Specimen Scoring");
-
-            }*/
 
             if (rumble.seconds() > 80 && !warning) {
                 driver1.gamepad.rumbleBlips(3);
