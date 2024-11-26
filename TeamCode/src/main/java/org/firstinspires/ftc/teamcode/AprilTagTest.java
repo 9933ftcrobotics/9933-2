@@ -73,7 +73,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "AprilTagTest", group = "Concept")
-@Disabled
+
 public class AprilTagTest extends LinearOpMode {
     ///More info in the april tag sample
 
@@ -95,7 +95,7 @@ public class AprilTagTest extends LinearOpMode {
         Action trajectoryAction1;
 
         trajectoryAction1 = drive.actionBuilder(drive.pose)
-                .lineToXSplineHeading(33, Math.toRadians(180))
+                .strafeTo(new Vector2d(10, 10))
                 .build();
 
 
@@ -114,43 +114,43 @@ public class AprilTagTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            arm.setArm(150);
+            //arm.setArm(150);
 
             telemetryAprilTag();
 
             // Push telemetry to the Driver Station.
             telemetry.update();
 
-                List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-                for (AprilTagDetection detection : currentDetections) {
-                    //If not found tag yet
-                    //if (!DriveConstants.foundTag) {
-                        // Look to see if we have size info on this tag.
-                        if (detection.metadata != null) {
-                            //  Check to see if we want to track towards this tag.
-                            if ((DriveConstants.DESIRED_TAG_ID < 0) || (detection.id == DriveConstants.DESIRED_TAG_ID)) {
-                                // Yes, we want to use this tag.
-                                DriveConstants.targetFound = true;
-                                DriveConstants.desiredTag = detection;
-                                DriveConstants.xCameraPos = detection.center.x;
-                                DriveConstants.yCameraPos = detection.center.y;
-                                DriveConstants.yawCameraPos = detection.rawPose.z;
-                                //DriveConstants.foundTag = true;
-                                telemetry.addLine("Found Tag");
-                                break;  // don't look any further.
-                            } else {
-                                // This tag is in the library, but we do not want to track it right now.
-                                telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
-                                DriveConstants.targetFound = false;
-                            }
-                        } else {
-                            // This tag is NOT in the library, so we don't have enough information to track to it.
-                            telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
-                        }
-                    //} //else if (detection.id != 11 && detection.id != 12 && detection.id != 13 && detection.id != 14 && detection.id != 15 && detection.id != 16 && !DriveConstants.driving) {
-                        //DriveConstants.foundTag = false;
-                    //}
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            for (AprilTagDetection detection : currentDetections) {
+                //If not found tag yet
+                //if (!DriveConstants.foundTag) {
+                // Look to see if we have size info on this tag.
+                if (detection.metadata != null) {
+                    //  Check to see if we want to track towards this tag.
+                    if ((DriveConstants.DESIRED_TAG_ID < 0) || (detection.id == DriveConstants.DESIRED_TAG_ID)) {
+                        // Yes, we want to use this tag.
+                        DriveConstants.targetFound = true;
+                        DriveConstants.desiredTag = detection;
+                        DriveConstants.xCameraPos = detection.center.x;
+                        DriveConstants.yCameraPos = detection.center.y;
+                        DriveConstants.yawCameraPos = detection.rawPose.z;
+                        //DriveConstants.foundTag = true;
+                        telemetry.addLine("Found Tag");
+                        break;  // don't look any further.
+                    } else {
+                        // This tag is in the library, but we do not want to track it right now.
+                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                        DriveConstants.targetFound = false;
+                    }
+                } else {
+                    // This tag is NOT in the library, so we don't have enough information to track to it.
+                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                 }
+                //} //else if (detection.id != 11 && detection.id != 12 && detection.id != 13 && detection.id != 14 && detection.id != 15 && detection.id != 16 && !DriveConstants.driving) {
+                //DriveConstants.foundTag = false;
+                //}
+            }
 
 
 
@@ -163,7 +163,7 @@ public class AprilTagTest extends LinearOpMode {
 
             if (DriveConstants.targetFound) {
                 telemetry.addLine("Robot SHOULD move");
-                arm.setArm(500);
+                //arm.setArm(500);
                 DriveConstants.driving = true;
                 Actions.runBlocking(
                         new SequentialAction(

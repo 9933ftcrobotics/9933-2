@@ -30,7 +30,7 @@ public class ArmSubsystem extends SubsystemBase {
     public static int outCurrent;
     public static int upCurrent;
 
-    public static double f = 1;
+    public static double f = 0.09;
 
     public static int target = 0;
     public static int outTarget = 0;
@@ -55,11 +55,11 @@ public class ArmSubsystem extends SubsystemBase {
         targetPos = Pos;
         // set the run mode
 
-        PIDController pid = new PIDController(0.008,0,1);
+        PIDController pid = new PIDController(0.0035,0.15,0.0001);
         double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
 
         // set the tolerance
-        double tolerence = 1;   // allowed maximum error
+        double tolerence = 6;   // allowed maximum error
         // perform the control loop
         if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
             arm.set(pid.calculate(arm.getCurrentPosition(),Pos) + ff);

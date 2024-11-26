@@ -65,7 +65,7 @@ public class armTest extends OpMode {
 
         arm_motor.setPower(power);
 
-        controller.setPID(p2,i2,d2);
+        /*controller.setPID(p2,i2,d2);
         int outArmPos = outArm.getCurrentPosition();
 
         double pidOut = controller.calculate(outArmPos,outTarget);
@@ -73,7 +73,7 @@ public class armTest extends OpMode {
 
         double power2 = pidOut + ffOut;
 
-        outArm.setPower(power2);
+        outArm.setPower(power2);*/
 
         outArm.setTargetPosition(outTarget);
         telemetry.addData("pos", armPos);

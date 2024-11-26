@@ -23,7 +23,7 @@ public class ClawSubsystem extends SubsystemBase {
         this.grabber = grabber;
         this.wrist = wrist;
         // change the effective range to a min and max in DEGREES
-        wrist.setInverted(false);
+        wrist.setInverted(true);
         wrist.setRange(MIN_ANGLE, MAX_ANGLE);
     }
 

@@ -171,7 +171,7 @@ public class NewMainDrive extends LinearOpMode {
                         //}
                     }*/ else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
                         drive.drive(leftX * 0.5, leftY * 0.5, rightX * 0.5, true);
-                        if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 60) {
+                        if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 75) {
                             arm.setArm(DriveConstants.armSampleScoreHigh);
                             arm.setOutArm(50);
                         } else {
@@ -222,10 +222,10 @@ public class NewMainDrive extends LinearOpMode {
                         arm.setArm(DriveConstants.armSpecimenClip);
                         arm.setOutArm(DriveConstants.armOutSpecimenClip);
                     } else if (timmer.seconds() < 4) {
-                        arm.setArm(1000);
-                        arm.setOutArm(600);
+                        arm.setArm(DriveConstants.armSpecimenClip - 75);
+                        arm.setOutArm(DriveConstants.armOutSpecimenClip);
                     } else if (timmer.seconds() < 6) {
-                        arm.setArm(500);
+                        arm.setArm(800);
                         arm.setOutArm(DriveConstants.armOutSpecimenRest);
                     } else if (timmer.seconds() < 7) {
                         upIsPressed = false;
