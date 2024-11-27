@@ -169,10 +169,15 @@ public class NewMainDrive extends LinearOpMode {
                         //}
                     }*/ else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
                         drive.drive(leftX * 0.5, leftY * 0.5, rightX * 0.5, true);
-                        if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 75) {
+                        /*if (ArmSubsystem.upCurrent < DriveConstants.armSampleScoreHigh - 150) {
                             arm.setArm(DriveConstants.armSampleScoreHigh);
                             arm.setOutArm(50);
                         } else {
+                            arm.setArm(DriveConstants.armSampleScoreHigh);
+                            arm.setOutArm(DriveConstants.armOutSampleScoreHigh);
+                        }*/
+                        arm.setArm(DriveConstants.armSampleScoreHigh);
+                        if (ArmSubsystem.upCurrent > 1000) {
                             arm.setArm(DriveConstants.armSampleScoreHigh);
                             arm.setOutArm(DriveConstants.armOutSampleScoreHigh);
                         }
@@ -193,6 +198,8 @@ public class NewMainDrive extends LinearOpMode {
                     } else if (driver1.getButton(GamepadKeys.Button.Y) || driver2.getButton(GamepadKeys.Button.Y)) {
                         drive.drive(leftX, leftY, rightX, true);
                         upIsPressed = true;
+                        arm.setArm(DriveConstants.armSpecimenClip);
+                        arm.setOutArm(DriveConstants.armOutSpecimenClip);
                         timmer.reset();
                     } else {
                         drive.drive(leftX, leftY, rightX, true);
@@ -229,7 +236,7 @@ public class NewMainDrive extends LinearOpMode {
                 }
 
 
-                if (upIsPressed == true) {
+                /*if (upIsPressed == true) {
                     drive.drive(leftX, leftY, rightX, true);
                     if (timmer.seconds() < 2.5) {
                         arm.setArm(DriveConstants.armSpecimenClip);
@@ -243,7 +250,7 @@ public class NewMainDrive extends LinearOpMode {
                     } else if (timmer.seconds() < 7) {
                         upIsPressed = false;
                     }
-                }
+                }*/
 
 
 

@@ -22,11 +22,11 @@ public class DriveConstants {
     public static double ZETA = 0.7;
 
 
-    public static int armSamplePick = 25;
-    public static int armSamplePickFar = 220;
+    public static int armSamplePick = 50;
+    public static int armSamplePickFar = 250;
     public static int armSampleRest = 230;
     public static int armSampleScoreLow = 1300;
-    public static int armSampleScoreHigh = 1875;
+    public static int armSampleScoreHigh = 2000;
 
     public static int armZero = 100;
 

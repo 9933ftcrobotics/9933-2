@@ -15,6 +15,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import org.firstinspires.ftc.teamcode.DriveConstants;
 
 public class ArmSubsystem extends SubsystemBase {
+    //public static double upCurrent;
     private Motor arm;
     private Motor outArm;
 
@@ -59,15 +60,15 @@ public class ArmSubsystem extends SubsystemBase {
         double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
 
         // set the tolerance
-        double tolerence = 6;   // allowed maximum error
+        double tolerence = 4;   // allowed maximum error
         // perform the control loop
-        if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
+        //if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
             arm.set(pid.calculate(arm.getCurrentPosition(),Pos) + ff);
             upArmInPos = false;
-        } else {
+        /*} else {
             arm.stopMotor(); // stop the motor
             upArmInPos = true;
-        }
+        }*/
 
         /*controller.setPID(p,i,d);
         int armPos = arm.getCurrentPosition();
@@ -116,7 +117,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void armCurrent() {
-        DriveConstants.armCurrent = arm.getCurrentPosition();
+        upCurrent = arm.getCurrentPosition();
     }
 
     public void stopUpDown() {
