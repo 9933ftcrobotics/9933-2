@@ -77,6 +77,7 @@ public class DriveSubsystem extends SubsystemBase {
         this.rightRear = rightRear;
         this.imu = imu;
         this.huskyLens = huskyLens;
+
         imu.init();
 
         odometry = new HolonomicOdometry(leftFront::getCurrentPosition, rightFront::getCurrentPosition, leftRear::getCurrentPosition, DriveConstants.TRACK_WIDTH, DriveConstants.CENTER_WHEEL_OFFSET);
@@ -94,7 +95,7 @@ public class DriveSubsystem extends SubsystemBase {
         //telemetry[5] += odometry.getPose().getX();
         //telemetry[6] += odometry.getPose().getY();
         //telemetry[7] += odometry.getPose().getRotation();
-        //imuAngle = imu.getRotation2d().getDegrees();
+        imuAngle = imu.getRotation2d().getDegrees();
         //odometry.updatePose();
     }
 
@@ -248,6 +249,7 @@ public class DriveSubsystem extends SubsystemBase {
         String[] telem = {
 
                 "Robot Angle: " + String.valueOf(imuAngle),
+                "Robot Auto Offset Angle: " + String.valueOf(DriveConstants.angle),
                 "Left Odom Pod: " + String.valueOf(leftEncoder),
                 "Right Odom Pod: " + String.valueOf(rightEncoder),
                 "Back Odom Pod: " + String.valueOf(backEncoder)

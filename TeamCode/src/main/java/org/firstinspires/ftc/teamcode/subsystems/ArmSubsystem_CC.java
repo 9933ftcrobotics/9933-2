@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static java.lang.Math.abs;
-
-import android.drm.DrmStore;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -14,7 +10,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 
 import org.firstinspires.ftc.teamcode.DriveConstants;
 
-public class ArmSubsystem extends SubsystemBase {
+public class ArmSubsystem_CC extends SubsystemBase {
     //public static double upCurrent;
     private Motor arm;
     private Motor outArm;
@@ -23,88 +19,81 @@ public class ArmSubsystem extends SubsystemBase {
 
     double outPower = 0;
 
-    private PIDController controller;
+    private PIDController armPID,outPID;
 
     private double targetPos = 0;
     private double targetPos2 = 0;
     private double outTargetPos = 0;
     public static int outCurrent;
-    public static int upCurrent;
+    public static int armCurrent;
 
-    public static int target = 0;
-    public static int outTarget = 0;
+    public static int ArmTarget = 0;
+    public static int OutTarget = 0;
 
     //private final double ticks_in_degree =  5281.1 / 360; //gobilda 30rpm encoder
     private final double ticks_in_degree =  8192 / 360; //rev thru bore
 
-    public static double p = 0.0025, i = 0, d = 0.0004;
-    public static double f = 0.07;
+    public static double arm_p = 0.0025, arm_i = 0, arm_d = 0.0004;
+    public static double arm_f = 0.07;
 
-    public ArmSubsystem(Motor arm, Motor outArm) {
+    public static double out_p = 0.004, out_i = 0, out_d = 0;
+
+    public ArmSubsystem_CC(Motor arm, Motor outArm) {
         arm.setInverted(false);
         outArm.setInverted(true);
         this.arm = arm;
         this.outArm = outArm;
         arm.resetEncoder();
         outArm.resetEncoder();
-        controller = new PIDController(p,i,d);
+        armPID = new PIDController(arm_p,arm_i,arm_d);
+        outPID = new PIDController(0.002,0,0);
+
     }
 
-    public void setArm(int Pos) {
-        upCurrent = arm.getCurrentPosition();
-        targetPos = Pos;
-        // set the run mode
+    public void setArms(int ArmTarget, int OutTarget) {
 
-        PIDController pid = new PIDController(p,i,d);
-        double ff = Math.cos(Math.toRadians(Pos / ticks_in_degree))*f;
+        armPID.setPID(arm_p,arm_i,arm_d);
+        armCurrent = arm.getCurrentPosition();
 
-        // set the tolerance
-        double tolerence = 4;   // allowed maximum error
-        // perform the control loop
-        //if (Math.abs(Pos-arm.getCurrentPosition()) > tolerence) {
-            arm.set(pid.calculate(arm.getCurrentPosition(),Pos) + ff);
-            upArmInPos = false;
-        /*} else {
-            arm.stopMotor(); // stop the motor
-            upArmInPos = true;
-        }*/
-
-        /*controller.setPID(p,i,d);
-        int armPos = arm.getCurrentPosition();
-
-        double pid = controller.calculate(armPos,target);
-        double ff = Math.cos(Math.toRadians(target / ticks_in_degree))*f;
+        double armpid = armPID.calculate(armCurrent,ArmTarget);
+        double armff = Math.cos(Math.toRadians(ArmTarget / ticks_in_degree))*arm_f;
 
 
-        double power = pid + ff;
+        double power = armpid + armff;
 
-        arm.set(power);*/
+        arm.set(power);
 
+        outPID.setPID(out_p,out_i,out_d);
+        outCurrent = outArm.getCurrentPosition();
+
+        double outpid = outPID.calculate(outCurrent,OutTarget);
+
+        outArm.set(outpid);
+
+
+    }
+    public void setArm(int ArmTarget) {
+
+        armPID.setPID(arm_p, arm_i, arm_d);
+        armCurrent = arm.getCurrentPosition();
+
+        double armpid = armPID.calculate(armCurrent, ArmTarget);
+        double armff = Math.cos(Math.toRadians(ArmTarget / ticks_in_degree)) * arm_f;
+
+
+        double power = armpid + armff;
+
+        arm.set(power);
     }
 
     public void setOutArm(int outPos) {
-
+        outPID.setPID(out_p,out_i,out_d);
         outCurrent = outArm.getCurrentPosition();
-        outTargetPos = outPos;
-        // set the run mode
 
-        PIDController pid = new PIDController(0.004,0,0);
-        //double ff = Math.cos(Math.toRadians(outPos / ticks_in_degree))*f;
+        double outpid = outPID.calculate(outCurrent,OutTarget);
 
-        // set the tolerance
-        double tolerence = 13.6;   // allowed maximum error
-        // perform the control loop
-        if (Math.abs(outPos-outArm.getCurrentPosition()) > tolerence) {
-            outPower = pid.calculate(outArm.getCurrentPosition(),outPos)/* + ff*/;
-            if (outPower > 0.6) {
-                outPower = 0.6;
-            }
-            outArm.set(outPower);
-            upArmInPos = false;
-        } else {
-            outArm.stopMotor(); // stop the motor
-            upArmInPos = true;
-        }
+        outArm.set(outpid);
+
     }
 
     public void powerArm(double Power) {
@@ -116,24 +105,13 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void armCurrent() {
-        upCurrent = arm.getCurrentPosition();
-    }
-
-    public void stopUpDown() {
-        arm.stopMotor();
-    }
-
-    public void stopInOut() {
-        outArm.stopMotor();
+        armCurrent = arm.getCurrentPosition();
     }
 
 
 
-    /*public Action Sleep(int Sec) {
-        wait(1);
 
-        return upOutAuto(Pos);
-    }*/
+
 
     public void resetOutArm() {outArm.resetEncoder();}
     public void resetArm() {arm.resetEncoder();}

@@ -77,6 +77,8 @@ public class DriveConstants {
     public static double yDis;
     public static boolean roadRunning = false;
 
+    public static double angle;
+
 
 
 }

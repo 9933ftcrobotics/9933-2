@@ -39,6 +39,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
+import org.firstinspires.ftc.teamcode.DriveConstants;
 
 /*
  * This OpMode shows how to use the new universal IMU interface. This
@@ -77,9 +78,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  * Finally, choose the two correct parameters to define how your Hub is mounted and edit this OpMode
  * to use those parameters.
  */
-@TeleOp (name = "Angle_Retain_Test", group = "Sensor")
-@Disabled   // Comment this out to add to the OpMode list
-public class SensorIMUOrthogonal extends LinearOpMode
+@Autonomous(name = "Angle_Retain_Test", group = "Sensor")
+//@Disabled   // Comment this out to add to the OpMode list
+public class Angle_Retain_CC extends LinearOpMode
 {
     // The IMU sensor object
     IMU imu;
@@ -135,8 +136,8 @@ public class SensorIMUOrthogonal extends LinearOpMode
             // Retrieve Rotational Angles and Velocities
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
-
-            telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
+            DriveConstants.angle = orientation.getYaw(AngleUnit.DEGREES);
+                    telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
             telemetry.addData("Pitch (X)", "%.2f Deg.", orientation.getPitch(AngleUnit.DEGREES));
             telemetry.addData("Roll (Y)", "%.2f Deg.\n", orientation.getRoll(AngleUnit.DEGREES));
             telemetry.addData("Yaw (Z) velocity", "%.2f Deg/Sec", angularVelocity.zRotationRate);
