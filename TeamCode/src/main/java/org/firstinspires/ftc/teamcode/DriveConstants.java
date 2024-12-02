@@ -22,9 +22,11 @@ public class DriveConstants {
     public static double ZETA = 0.7;
 
 
+    /*
+    //Rev Thru Bore
     public static int armSamplePick = 50;
     public static int armSamplePickFar = 250;
-    public static int armSampleRest = 230;
+    public static int armSampleRest = 300;
     public static int armSampleScoreLow = 1300;
     public static int armSampleScoreHigh = 2000;
 
@@ -32,6 +34,19 @@ public class DriveConstants {
 
     public static int armSpecimenPick = armSamplePick;
     public static int armSpecimenClip = 1450;
+    public static int armSpecimenRest = 1100;*/
+
+    //gobilda 30RPM Motor Encoder
+    public static int armSamplePick = 0;
+    public static int armSamplePickFar = 220;
+    public static int armSampleRest = 150;
+    public static int armSampleScoreLow = 1100;
+    public static int armSampleScoreHigh = 1500;
+
+    public static int armZero = 100;
+
+    public static int armSpecimenPick = armSamplePick;
+    public static int armSpecimenClip = 1100;
     public static int armSpecimenRest = 1100;
 
     public static int armOutSamplePick = 475;

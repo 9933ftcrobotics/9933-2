@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
 @TeleOp
-public class MainDrive_CC extends LinearOpMode {
+public class Dry_Cycle_CC extends LinearOpMode {
     boolean wristCenter = true;
 
 
@@ -29,10 +29,12 @@ public class MainDrive_CC extends LinearOpMode {
     // differences between them can be read here in the docs:
     // https://docs.ftclib.org/ftclib/features/drivebases#control-scheme
 
-    private static ElapsedTime timmer = new ElapsedTime();
+    private static ElapsedTime timer = new ElapsedTime();
     private static ElapsedTime rumble = new ElapsedTime();
     private static ElapsedTime huskyTime = new ElapsedTime();
     private static ElapsedTime reset = new ElapsedTime();
+    double prev_time, cycles;
+    int state;
     boolean warning = false;
     boolean endGame = false;
 
@@ -88,37 +90,35 @@ public class MainDrive_CC extends LinearOpMode {
         //camera.initAprilTag();
 
         while (!isStopRequested()) {
-            rightX = driver1.getRightX();
-            leftX = driver1.getLeftX();
-            leftY = driver1.getLeftY();
-
 
             CommandScheduler.getInstance().run();
 
-            if (driver1.getButton(GamepadKeys.Button.Y) && YIsPressed == false || driver2.getButton(GamepadKeys.Button.Y) && YIsPressed == false) {
-                telemetry.addLine("Y is pressed");
-                if (sampleScoring == true) {
-                    sampleScoring = false;
-                    telemetry.addLine("sampleScoring is true. Changing to false");
-                } else if (sampleScoring == false) {
-                    sampleScoring = true;
-                    telemetry.addLine("sampleScoring is false. Changing to true");
-                }
-                YIsPressed = true;
-            }
-
-            if (!driver1.getButton(GamepadKeys.Button.Y) && !driver2.getButton(GamepadKeys.Button.Y) ) {
-                YIsPressed = false;
-            }
 
             claw.SetWristCenter();
-            drive.drive(leftX, leftY, rightX, true);
+            //drive.drive(leftX, leftY, rightX, true);
 
-            if (driver2.getButton(GamepadKeys.Button.DPAD_UP)){
-                arm.setArms(DriveConstants.armSampleScoreHigh,DriveConstants.armOutSampleScoreHigh);
-            }
-            else{
-                arm.setArms(DriveConstants.armSampleRest,DriveConstants.armOutSampleRest);
+            switch(state){
+                case 0:
+                    prev_time = timer.seconds();
+                    state = 10;
+                    break;
+                case 10:
+                    arm.setArms(DriveConstants.armSampleRest,DriveConstants.armOutSampleRest);
+                    if((prev_time+5) < timer.seconds()){
+                        state = 20;
+                    }
+                    break;
+                case 20:
+                    prev_time = timer.seconds();
+                    state = 30;
+                    break;
+                case 30:
+                    arm.setArms(DriveConstants.armSampleScoreHigh,DriveConstants.armOutSampleScoreHigh);
+                    if((prev_time+5) < timer.seconds()){
+                        state = 0;
+                        cycles = cycles + 1;
+                    }
+                    break;
             }
 
             if (rumble.seconds() > 80 && !warning) {
@@ -132,8 +132,8 @@ public class MainDrive_CC extends LinearOpMode {
 
 
             drive.getCurrentPose();
-
-            updateTelemetry(drive.getDriveTelemetry());
+            telemetry.addData("Cycles: ", cycles);
+            //updateTelemetry(drive.getDriveTelemetry());
             updateTelemetry(arm.getArmTelemetry());
             telemetry.update();
 
