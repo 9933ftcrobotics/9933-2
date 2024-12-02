@@ -88,6 +88,7 @@ public class ArmSubsystem_CC extends SubsystemBase {
 
         double power = armpid + armff;
 
+        power = clamp(power,-0.4,1);
         arm.set(power);
     }
 

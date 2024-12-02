@@ -44,6 +44,10 @@ public class MainDrive_CC extends LinearOpMode {
 
     double leftY, leftX, rightX;
 
+    int ReqArmPos, ReqOutPos;
+
+    boolean Arm_Override_Active;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -83,6 +87,8 @@ public class MainDrive_CC extends LinearOpMode {
         GamepadEx driver1 = new GamepadEx(gamepad1);
         GamepadEx driver2 = new GamepadEx(gamepad2);
 
+        ReqArmPos = DriveConstants.armSampleRest;
+        ReqOutPos = DriveConstants.armOutSampleRest;
 
         waitForStart();
         //camera.initAprilTag();
@@ -92,6 +98,14 @@ public class MainDrive_CC extends LinearOpMode {
             leftX = driver1.getLeftX();
             leftY = driver1.getLeftY();
 
+
+
+            drive.drive(leftX, leftY, rightX, true);
+
+            drive.getCurrentPose();
+
+            updateTelemetry(drive.getDriveTelemetry());
+            updateTelemetry(arm.getArmTelemetry());
 
             CommandScheduler.getInstance().run();
 
@@ -112,15 +126,51 @@ public class MainDrive_CC extends LinearOpMode {
             }
 
             claw.SetWristCenter();
-            drive.drive(leftX, leftY, rightX, true);
 
-            if (driver2.getButton(GamepadKeys.Button.DPAD_UP)){
-                arm.setArms(DriveConstants.armSampleScoreHigh,DriveConstants.armOutSampleScoreHigh);
+            if(!Arm_Override_Active) {
+                //by putting this out of the state machine we don't accidentally forget to call this
+                // and send the arm into orbit because its still set to a constant power value instead
+                // of still checking against the PID controllers.
+                arm.setArms(ReqArmPos,ReqOutPos);
+                if(driver1.getButton(GamepadKeys.Button.DPAD_UP) || driver1.getButton(GamepadKeys.Button.DPAD_DOWN) || driver1.getButton(GamepadKeys.Button.A) || driver1.getButton(GamepadKeys.Button.Y)){
+                    Arm_Override_Active = true;
+                }
+                else if (driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
+                    ReqArmPos = DriveConstants.armSampleScoreHigh;
+                    ReqOutPos = DriveConstants.armOutSampleScoreHigh;
+                }
+                else {
+                    ReqArmPos = DriveConstants.armSampleRest;
+                    ReqOutPos = DriveConstants.armOutSampleRest;
+                }
             }
             else{
-                arm.setArms(DriveConstants.armSampleRest,DriveConstants.armOutSampleRest);
-            }
+                //have to call seperate arms because when overriding you want to be able to lift
+                //and lower arm regardless where the out arm is
+                arm.setArm(ReqArmPos);
+                arm.setOutArm(ReqOutPos);
 
+                if(driver1.getButton(GamepadKeys.Button.BACK)){
+                    Arm_Override_Active = false;
+                }
+                else if(driver1.getButton(GamepadKeys.Button.START)){
+                    Arm_Override_Active = false;
+                    arm.resetOutArm();
+                    arm.resetArm();
+                }
+                else if(driver1.getButton(GamepadKeys.Button.DPAD_UP)){
+                    ReqArmPos = ReqArmPos + 10;
+                }
+                else if(driver1.getButton(GamepadKeys.Button.DPAD_DOWN)){
+                    ReqArmPos = ReqArmPos - 10;
+                }
+                else if(driver1.getButton(GamepadKeys.Button.Y)){
+                    ReqOutPos = ReqOutPos + 20;
+                }
+                else if(driver1.getButton(GamepadKeys.Button.A)){
+                    ReqOutPos = ReqOutPos - 20;
+                }
+            }
             if (rumble.seconds() > 80 && !warning) {
                 driver1.gamepad.rumbleBlips(3);
                 warning = true;
@@ -131,10 +181,6 @@ public class MainDrive_CC extends LinearOpMode {
             telemetry.addData("Timmer For End Game", rumble);
 
 
-            drive.getCurrentPose();
-
-            updateTelemetry(drive.getDriveTelemetry());
-            updateTelemetry(arm.getArmTelemetry());
             telemetry.update();
 
 
