@@ -165,7 +165,7 @@ public class ArmSubsystem extends SubsystemBase {
         int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            setArm(DriveConstants.armSamplePick);
+            setArm(DriveConstants.armSamplePick + 25);
             Run = Run + 1;
             return !upArmInPos && Run < 100;
         }

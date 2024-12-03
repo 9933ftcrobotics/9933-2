@@ -41,40 +41,45 @@ public class BlueLeft extends LinearOpMode {
                 new SimpleServo(hardwareMap, "wrist", 0,1)
         );
 
-        Pose2d initialPose = new Pose2d(15, 62, Math.toRadians(-90));
+        Pose2d initialPose = new Pose2d(32, 62, Math.toRadians(-90));
         Pose2d secondPos = new Pose2d(45, 45, Math.toRadians(-90));
         Pose2d thirdPos = new Pose2d(52, 52, Math.toRadians(50));
         Pose2d fourthPos = new Pose2d(35, 35, Math.toRadians(0));
-        Pose2d afterPick = new Pose2d(36, 22, Math.toRadians(0));
+        Pose2d otherPos = new Pose2d(36, 22, Math.toRadians(0));
+        Pose2d afterPick = new Pose2d(40, 22, Math.toRadians(0));
         Pose2d afterScoreOne = new Pose2d(45, 45, Math.toRadians(50));
-        Pose2d finishPos = new Pose2d(51, 51, Math.toRadians(50)); //TODO: Will need to change is update Trajectory
+        Pose2d finishPos = new Pose2d(51, 51, Math.toRadians(50)); //TODO: Will need to change if update Trajectory
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
 
         TrajectoryActionBuilder One = drive.actionBuilder(initialPose)
                 .strafeTo(new Vector2d(45, 45));
+                //.setTangent(50)
+                //.splineToLinearHeading(new Pose2d(45, 45, 50), Math.PI / 2);
                 //.turnTo(Math.toRadians(45))
                 //.strafeTo(new Vector2d(45, 45));
         TrajectoryActionBuilder FirstScore = drive.actionBuilder(secondPos)
                 .turnTo(Math.toRadians(50))
-                .strafeTo(new Vector2d(51, 51));
+                .strafeTo(new Vector2d(49, 49));
         TrajectoryActionBuilder Two = drive.actionBuilder(thirdPos)
                 .strafeTo(new Vector2d(36, 35))
                 .turnTo(Math.toRadians(0));
         TrajectoryActionBuilder TwoFinish = drive.actionBuilder(fourthPos)
                 .strafeTo(new Vector2d(36, 22));
+        TrajectoryActionBuilder Other = drive.actionBuilder(otherPos)
+                .strafeTo(new Vector2d(40, 22));
         TrajectoryActionBuilder ScoreOne = drive.actionBuilder(afterPick)
                 .strafeTo(new Vector2d(45, 45))
                 .turnTo(Math.toRadians(50));
         TrajectoryActionBuilder ScoreTwo = drive.actionBuilder(afterScoreOne)
-                .strafeTo(new Vector2d(51, 51));
+                .strafeTo(new Vector2d(49.5, 49.5));
         TrajectoryActionBuilder Four = drive.actionBuilder(initialPose)
                 .strafeTo(new Vector2d(38, 28))
                 .turnTo(Math.toRadians(0))
                 .strafeTo(new Vector2d(48, 26));
         TrajectoryActionBuilder Sleep = drive.actionBuilder(initialPose)
-                .waitSeconds(0.75);
+                .waitSeconds(0.4);
         TrajectoryActionBuilder SleepLong = drive.actionBuilder(initialPose)
                 .waitSeconds(2);
         TrajectoryActionBuilder SleepReallyLong = drive.actionBuilder(initialPose)
@@ -97,6 +102,7 @@ public class BlueLeft extends LinearOpMode {
         Action scoreFirst = FirstScore.build();
         Action RunSecond = Two.build();
         Action RunSecondFinish = TwoFinish.build();
+        Action other = Other.build();
         Action RunScoreOne = ScoreOne.build();
         Action RunScoreTwo = ScoreTwo.build();
         Action RunFourth = Four.build();
@@ -117,7 +123,7 @@ public class BlueLeft extends LinearOpMode {
                         //Rotate Wrist
                         new ParallelAction(
                                 ///arm.upRest(),
-                                arm.upTest(),
+                                arm.upHigh(),
                                 arm.outRest()
                         ),
                         new InstantAction(claw::SetWristCenter),
@@ -133,23 +139,34 @@ public class BlueLeft extends LinearOpMode {
                         ),*/
                         //WaitLong
                         new InstantAction(claw::grabberPlace),
-                        Wait,
+                        new ParallelAction(
+                                arm.upHigh(),
+                                arm.outHigh(),
+                                Wait
+                        ),
+
                         //RunSecond,
                         new ParallelAction(
                                 arm.outRest()
                                 //new InstantAction(arm::stopUpDown)
                         ),
                         new ParallelAction(
-                                new InstantAction(arm::stopUpDown)
+                                new InstantAction(arm::stopUpDown),
+                                RunSecond,
+                                arm.upPick(),
+                                arm.outRest()
                         ),
-                        new ParallelAction(
+                        /*new ParallelAction(
                                 //arm.outRest(),
                                 RunSecond,
-                                new InstantAction(claw::grabberStop)
+                                new InstantAction(claw::grabberStop),
+                                arm.upRest(),
+                                arm.outRest()
                                 //new InstantAction(arm::stopUpDown)
-                        ),
+                        ),*/
                         new ParallelAction(
                                 arm.outRest(),
+                                arm.upPick(),
                                 //new InstantAction(arm::stopUpDown),
                                 RunSecondFinish,
                                 //new InstantAction(claw::grabberStop),
@@ -157,11 +174,12 @@ public class BlueLeft extends LinearOpMode {
                         ),
                         //new InstantAction(claw::grabberPick),
                         new ParallelAction(
+                                other,
                                 arm.outPick(),
                                 arm.upPick()
                         ),
                         new ParallelAction(
-                                new InstantAction(claw::grabberStop),
+                                //new InstantAction(claw::grabberStop),
                                 RunScoreOne,
                                 arm.upHigh()
                         ),
