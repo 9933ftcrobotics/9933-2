@@ -37,6 +37,7 @@ public class MainDrive_CC extends LinearOpMode {
     boolean endGame = false;
 
     static final boolean FIELD_CENTRIC = true;
+    boolean grabberMove = false;
 
     boolean sampleScoring = true; //true = sample false = specimin
 
@@ -47,6 +48,8 @@ public class MainDrive_CC extends LinearOpMode {
     int ReqArmPos, ReqOutPos;
 
     boolean Arm_Override_Active;
+    boolean leftBumperPressed, modeSlow = false;
+    double slow = 0.3; //Percentage of how slow the "slow" mode is.
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -99,8 +102,11 @@ public class MainDrive_CC extends LinearOpMode {
             leftY = driver1.getLeftY();
 
 
-
-            drive.drive(leftX, leftY, rightX, true);
+            if (!modeSlow) {
+                drive.drive(leftX, leftY, rightX, true);
+            } else if (modeSlow) {
+                drive.drive(leftX * slow, leftY * slow, rightX * slow, true);
+            }
 
             drive.getCurrentPose();
 
@@ -109,6 +115,24 @@ public class MainDrive_CC extends LinearOpMode {
 
             CommandScheduler.getInstance().run();
 
+
+            //Speed Reduce
+            if (driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && leftBumperPressed == false || driver2.getButton(GamepadKeys.Button.LEFT_BUMPER) && leftBumperPressed == false) {
+                if (modeSlow == true) {
+                    modeSlow = false;
+                } else if (modeSlow == false) {
+                    modeSlow = true;
+                }
+                leftBumperPressed = true;
+            }
+
+            if (!driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && !driver2.getButton(GamepadKeys.Button.LEFT_BUMPER) ) {
+                leftBumperPressed = false;
+            }
+
+
+
+            /*
             if (driver1.getButton(GamepadKeys.Button.Y) && YIsPressed == false || driver2.getButton(GamepadKeys.Button.Y) && YIsPressed == false) {
                 telemetry.addLine("Y is pressed");
                 if (sampleScoring == true) {
@@ -123,9 +147,34 @@ public class MainDrive_CC extends LinearOpMode {
 
             if (!driver1.getButton(GamepadKeys.Button.Y) && !driver2.getButton(GamepadKeys.Button.Y) ) {
                 YIsPressed = false;
+            }*/
+
+
+
+
+
+
+
+            if (driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.075) {
+                claw.grabberPlaceToPower(driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+            } else if (driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.075) {
+                claw.grabberPlaceToPower(driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+            } else if (driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.075) {
+                claw.grabberPlaceToPower(-driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+            } else if (driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.075) {
+                claw.grabberPlaceToPower(-driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+            } else if (!driver2.getButton(GamepadKeys.Button.A) && !driver2.getButton(GamepadKeys.Button.DPAD_DOWN)){
+                claw.grabberStop();
             }
 
-            claw.SetWristCenter();
+
+
+
+            if (driver1.getButton(GamepadKeys.Button.X) || (driver2.getButton(GamepadKeys.Button.X))) {
+                claw.SetWristLeft();
+            } else if (driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) || driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+                claw.SetWristCenter();
+            }
 
             if(!Arm_Override_Active) {
                 //by putting this out of the state machine we don't accidentally forget to call this
@@ -138,10 +187,30 @@ public class MainDrive_CC extends LinearOpMode {
                 else if (driver2.getButton(GamepadKeys.Button.DPAD_UP)) {
                     ReqArmPos = DriveConstants.armSampleScoreHigh;
                     ReqOutPos = DriveConstants.armOutSampleScoreHigh;
+                    modeSlow = true;
+                }
+                else if (driver2.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+                    ReqArmPos = DriveConstants.armSamplePickFar;
+                    ReqOutPos = DriveConstants.armOutSamplePickFar;
+                    claw.grabberPick();
+                    modeSlow = false;
+                }
+                else if (driver2.getButton(GamepadKeys.Button.A)) {
+                    ReqArmPos = DriveConstants.armSamplePick;
+                    ReqOutPos = DriveConstants.armOutSamplePick;
+                    claw.grabberPick();
+                    modeSlow = false;
+                }
+                else if (driver2.getButton(GamepadKeys.Button.Y)) {
+                    ReqArmPos = DriveConstants.armSpecimenClip;
+                    ReqOutPos = DriveConstants.armOutSpecimenClip;
+                    claw.grabberPick();
+                    modeSlow = true;
                 }
                 else {
                     ReqArmPos = DriveConstants.armSampleRest;
                     ReqOutPos = DriveConstants.armOutSampleRest;
+                    modeSlow = false;
                 }
             }
             else{

@@ -37,8 +37,8 @@ public class DriveConstants {
     public static int armSpecimenRest = 1100;*/
 
     //gobilda 30RPM Motor Encoder
-    public static int armSamplePick = 0;
-    public static int armSamplePickFar = 220;
+    public static int armSamplePick = 75;
+    public static int armSamplePickFar = 250;
     public static int armSampleRest = 500;
     public static int armSampleScoreLow = 1100;
     public static int armSampleScoreHigh = 1525;
