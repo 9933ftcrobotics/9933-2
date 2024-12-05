@@ -15,6 +15,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -27,6 +28,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 @Autonomous(name = "RedRight", group = "Autonomous")
+@Disabled
 public class RedRight extends LinearOpMode {
 
 

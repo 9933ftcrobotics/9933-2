@@ -13,6 +13,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 
 @Config
 @Autonomous(name = "Sample_Auto_CC", group = "Autonomous")
+@Disabled
 public class Sample_Auto_CC extends LinearOpMode {
 
 

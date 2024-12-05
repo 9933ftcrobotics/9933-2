@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -79,7 +79,7 @@ import org.firstinspires.ftc.teamcode.DriveConstants;
  * to use those parameters.
  */
 @Autonomous(name = "Angle_Retain_Test", group = "Sensor")
-//@Disabled   // Comment this out to add to the OpMode list
+@Disabled   // Comment this out to add to the OpMode list
 public class Angle_Retain_CC extends LinearOpMode
 {
     // The IMU sensor object
