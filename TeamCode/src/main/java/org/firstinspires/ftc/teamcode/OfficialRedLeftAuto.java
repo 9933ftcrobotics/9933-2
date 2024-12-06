@@ -27,9 +27,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
-@Autonomous(name = "Official BLUE LEFT Auto", group = "Autonomous")
+@Autonomous(name = "Official RED LEFT Auto", group = "Autonomous")
 
-public class OfficialBlueLeftAuto extends LinearOpMode {
+public class OfficialRedLeftAuto extends LinearOpMode {
 
 
     @Override
@@ -56,6 +56,7 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
         Pose2d ThirdScorePos = new Pose2d(44, 23, Math.toRadians(0));
         Pose2d FourthScorePos = new Pose2d(54.5, 23, Math.toRadians(0));
         Pose2d pickFourthPos = new Pose2d(52, 51, Math.toRadians(50));
+        Pose2d pickFourthFinishPos = new Pose2d(55.5, 23, Math.toRadians(0));
         Pose2d finishPos = new Pose2d(51, 50, Math.toRadians(50)); //TODO: Will need to change if update Trajectory
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
@@ -93,7 +94,7 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
 
 
         TrajectoryActionBuilder GrabThird = drive.actionBuilder(grabThirdPos)
-                .strafeToSplineHeading(new Vector2d(45.5, 23), Math.toRadians(0));
+                .strafeToSplineHeading(new Vector2d(42, 23), Math.toRadians(0));
         TrajectoryActionBuilder PickThirdFinish = drive.actionBuilder(grabThirdFinishPos)
                 //.strafeToSplineHeading(new Vector2d(35, 37), Math.toRadians(0))
                 //TrajectoryActionBuilder PickFirstFinish = drive.actionBuilder(pickFirstFinishPos)
@@ -108,7 +109,9 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
                 .strafeToSplineHeading(new Vector2d(51, 50), Math.toRadians(50));
 
         TrajectoryActionBuilder PickFourth = drive.actionBuilder(pickFourthPos)
-                .strafeToSplineHeading(new Vector2d(55.5, 23), Math.toRadians(0));
+                .strafeToSplineHeading(new Vector2d(52, 23), Math.toRadians(0));
+        TrajectoryActionBuilder PickFourthFinish = drive.actionBuilder(pickFourthFinishPos)
+                .strafeToSplineHeading(new Vector2d(56, 23), Math.toRadians(0));
 
         TrajectoryActionBuilder FourthScore = drive.actionBuilder(FourthScorePos)
                 .strafeToSplineHeading(new Vector2d(52, 51), Math.toRadians(50));
@@ -145,6 +148,7 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
         Action waitMid = MidWait.build();
 
         Action fourthPick = PickFourth.build();
+        Action fourthPickFinish = PickFourthFinish.build();
         Action fourthScore = FourthScore.build();
 
 
@@ -189,17 +193,18 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
                                 arm.upRest(),
                                 pickFirst
                         ),
-                        /*new ParallelAction( //Pick second
+                        new ParallelAction( //Pick second
                                 new InstantAction(claw::grabberPick),
                                 arm.outPickFar(),
                                 arm.upPickFar()
-                        ),*/
-                        new ParallelAction( //Pick second
+                        ),
+                        /*new ParallelAction( //Pick second
                                 new InstantAction(claw::grabberPick),
                                 arm.outPick(),
                                 arm.upPick(),
                                 pickFirstFinish
-                        ),
+                        ),*/
+                        waitPick,
                         /*new ParallelAction( //Pick second
                                 new InstantAction(claw::grabberPick),
                                 arm.outPickFar(),
@@ -207,11 +212,11 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
                                 waitPick
                         ),*/
                         new ParallelAction( //Drive to finish score second
-                                new InstantAction(claw::grabberStop),
                                 //arm.outMid(),
                                 arm.upHigh(),
                                 secondScore
                         ),
+                        new InstantAction(claw::grabberStop),
                         new ParallelAction( //Place second
                                 arm.outHigh(),
                                 arm.upHigh()
@@ -226,26 +231,28 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
                                 waitScore
                         ),
                         new ParallelAction( //Rest
-                                new InstantAction(claw::grabberStop),
+                                //new InstantAction(claw::grabberStop),
                                 arm.outRest(),
                                 arm.upHigh()
                         ),
                         waitScore,
+                        new InstantAction(claw::grabberPick),
                         new ParallelAction( //Drive to third
-                                arm.outRest(),
-                                arm.upRest(),
+                                arm.outPick(),
+                                arm.upPick(),
                                 grabThird
                         ),
-                        new InstantAction(claw::grabberPick),
                         new ParallelAction( //Pick third
                                 //new InstantAction(claw::grabberPick),
-                                arm.outPickFar(),
-                                arm.upPickFar()
+                                arm.outPick(),
+                                arm.upPick(),
+                                grabThirdFinish
                                 //waitPick
                         ),
+                        waitPick,
                         new ParallelAction( //Pick third
-                                arm.outPickFar(),
-                                arm.upPickFar(),
+                                arm.outPick(),
+                                arm.upPick(),
                                 waitPick
                         ),
                         new ParallelAction( //Drive to finish score third
@@ -268,31 +275,26 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
                         ),
                         new ParallelAction( //Rest
                                 new InstantAction(claw::grabberStop),
-                                arm.outRest(),
+                                arm.outPick(),
                                 arm.upHigh()
                         ),
+                        new InstantAction(claw::grabberPick),
                         waitScore,
-
                         new ParallelAction( //drive to fourth
-                                arm.outRest(),
-                                arm.upRest(),
+                                arm.outPick(),
+                                arm.upPick(),
                                 fourthPick
                         ),
-
-                        new InstantAction(claw::grabberPick),
-                        new ParallelAction( //Pick forth
-                                //new InstantAction(claw::grabberPick),
-                                arm.outPickFar(),
-                                arm.upPickFar()
-                                //waitPick
-                        ),
                         new ParallelAction( //Pick fourth
-                                arm.outPickFar(),
-                                arm.upPickFar(),
-                                waitPick
+                                new InstantAction(claw::grabberPick),
+                                arm.outPick(),
+                                arm.upPick(),
+                                fourthPickFinish
                         ),
-
+                        new InstantAction(claw::grabberPick),
+                        waitPick,
                         new ParallelAction( //Drive to place fourth
+                                new InstantAction(claw::grabberStop),
                                 //arm.outMid(),
                                 arm.upHigh(),
                                 fourthScore

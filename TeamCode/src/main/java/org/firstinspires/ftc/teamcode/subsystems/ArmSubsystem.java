@@ -165,7 +165,7 @@ public class ArmSubsystem extends SubsystemBase {
         int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            setArm(DriveConstants.armSamplePick + 75);
+            setArm(DriveConstants.armSamplePick + 65);
             Run = Run + 1;
             return !upArmInPos && Run < 30;
         }
@@ -207,7 +207,7 @@ public class ArmSubsystem extends SubsystemBase {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             //arm.setTargetPosition(DriveConstants.armSpecimenRest);
-            setArm(DriveConstants.armSpecimenClip - 200);
+            setArm(DriveConstants.armSpecimenClip - 300);
             run = run + 1;
             return !upArmInPos && run < 75;
         }
@@ -265,7 +265,7 @@ public class ArmSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             setOutArm(DriveConstants.armOutSampleScoreHigh);
             Run = Run + 1;
-            return !outArmInPos && Run < 70;
+            return !outArmInPos && Run < 85;
         }
     }
     public Action outHigh() {
