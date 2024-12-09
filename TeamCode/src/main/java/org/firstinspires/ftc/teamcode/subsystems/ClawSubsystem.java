@@ -28,7 +28,7 @@ public class ClawSubsystem extends SubsystemBase {
     }
 
     public void grabberPlace() { grabber.set(1); }
-    public void grabberPlaceSlow() { grabber.set(0.3); }
+    public void grabberPlaceSlow() { grabber.set(0.2); }
     public void grabberPlaceToPower(double Power) { grabber.set(Power); }
 
     public void grabberPick() { grabber.set(-1); }

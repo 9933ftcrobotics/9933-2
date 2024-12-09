@@ -165,7 +165,7 @@ public class ArmSubsystem extends SubsystemBase {
         int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            setArm(DriveConstants.armSamplePick + 65);
+            setArm(DriveConstants.armSamplePick - 70);
             Run = Run + 1;
             return !upArmInPos && Run < 30;
         }
@@ -192,9 +192,9 @@ public class ArmSubsystem extends SubsystemBase {
         int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            setArm(DriveConstants.armSampleScoreHigh);
+            setArm(DriveConstants.armSampleScoreHigh + 30);
             Run = Run + 1;
-            return !upArmInPos && Run < 50; //Time off?
+            return !upArmInPos && Run < 60; //Time off?
         }
     }
     public Action upHigh() {
@@ -237,7 +237,7 @@ public class ArmSubsystem extends SubsystemBase {
         int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            setOutArm(DriveConstants.armOutSamplePick + 50);
+            setOutArm(DriveConstants.armOutSamplePick + 340);
             Run = Run + 1;
             return !outArmInPos && Run < 25;
         }
@@ -265,7 +265,7 @@ public class ArmSubsystem extends SubsystemBase {
         public boolean run(@NonNull TelemetryPacket packet) {
             setOutArm(DriveConstants.armOutSampleScoreHigh);
             Run = Run + 1;
-            return !outArmInPos && Run < 85;
+            return !outArmInPos && Run < 75;
         }
     }
     public Action outHigh() {
@@ -345,9 +345,9 @@ public class ArmSubsystem extends SubsystemBase {
         int Run = 0;
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            setArm(DriveConstants.armSamplePickFar);
+            setArm(DriveConstants.armSamplePickFar - 50);
             Run = Run + 1;
-            return !outArmInPos && Run < 30;
+            return !outArmInPos && Run < 40;
         }
     }
     public Action upPickFar() {

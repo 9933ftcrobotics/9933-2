@@ -49,7 +49,7 @@ public class MainDrive_CC extends LinearOpMode {
 
     boolean Arm_Override_Active;
     boolean leftBumperPressed, modeSlow = false;
-    double slow = 0.3; //Percentage of how slow the "slow" mode is.
+    double slow = 0.5; //Percentage of how slow the "slow" mode is.
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -204,7 +204,7 @@ public class MainDrive_CC extends LinearOpMode {
                 else if (driver2.getButton(GamepadKeys.Button.Y)) {
                     ReqArmPos = DriveConstants.armSpecimenClip;
                     ReqOutPos = DriveConstants.armOutSpecimenClip;
-                    claw.grabberPick();
+                    //claw.grabberPick();
                     modeSlow = true;
                 }
                 else {
