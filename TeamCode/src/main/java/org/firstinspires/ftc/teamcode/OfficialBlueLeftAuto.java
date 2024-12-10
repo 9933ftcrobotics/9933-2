@@ -45,19 +45,19 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
 
         Pose2d initialPose = new Pose2d(32, 62, Math.toRadians(-90));
         Pose2d finishScorePos = new Pose2d(45, 45, Math.toRadians(50));
-        Pose2d afterScorePos = new Pose2d(52, 50, Math.toRadians(50));
+        Pose2d afterScorePos = new Pose2d(54, 50, Math.toRadians(50));
         Pose2d afterFirstScorePos = new Pose2d(35.5, 22, Math.toRadians(0));
         Pose2d pickFirstFinishPos = new Pose2d(35, 37, Math.toRadians(0));
         Pose2d prepSecondScorePos = new Pose2d(38, 22, Math.toRadians(0));
         Pose2d SecondScorePos = new Pose2d(33.5, 22, Math.toRadians(0));
         Pose2d prepThirdScorePos = new Pose2d(50, 22, Math.toRadians(0));
-        Pose2d grabThirdPos = new Pose2d(56, 50.5, Math.toRadians(50));
+        Pose2d grabThirdPos = new Pose2d(54, 50, Math.toRadians(50));
         Pose2d grabThirdFinishPos = new Pose2d(45.5, 23, Math.toRadians(0));
         Pose2d ThirdScorePos = new Pose2d(44, 22, Math.toRadians(0));
         Pose2d FourthScorePos = new Pose2d(54.5, 22, Math.toRadians(0));
-        Pose2d pickFourthPos = new Pose2d(56, 50.5, Math.toRadians(50));
+        Pose2d pickFourthPos = new Pose2d(54, 50, Math.toRadians(50));
         Pose2d pickFourthFinishPos = new Pose2d(55.5, 23, Math.toRadians(0));
-        Pose2d finishPos = new Pose2d(55, 50, Math.toRadians(50)); //TODO: Will need to change if update Trajectory
+        Pose2d finishPos = new Pose2d(54, 50, Math.toRadians(50)); //TODO: Will need to change if update Trajectory
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
@@ -67,7 +67,7 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
 
 
         TrajectoryActionBuilder FinishScoreOne = drive.actionBuilder(finishScorePos)
-                .strafeToSplineHeading(new Vector2d(53, 50), Math.toRadians(50));
+                .strafeToSplineHeading(new Vector2d(54, 50), Math.toRadians(50));
 
 
         TrajectoryActionBuilder PickFirst = drive.actionBuilder(afterScorePos)
@@ -75,19 +75,19 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
                 //TrajectoryActionBuilder PickFirstFinish = drive.actionBuilder(pickFirstFinishPos)
                 //.strafeTo(new Vector2d(35, 25));
                 .strafeToSplineHeading(new Vector2d(34, 30), Math.toRadians(0))
-                .strafeToSplineHeading(new Vector2d(36.5, 22), Math.toRadians(0));
+                .strafeToSplineHeading(new Vector2d(36.5, 23), Math.toRadians(0));
         TrajectoryActionBuilder PickFirstFinish = drive.actionBuilder(afterFirstScorePos)
                 //.strafeToSplineHeading(new Vector2d(35, 37), Math.toRadians(0))
                 //TrajectoryActionBuilder PickFirstFinish = drive.actionBuilder(pickFirstFinishPos)
                 //.strafeTo(new Vector2d(35, 25));
-                .strafeToSplineHeading(new Vector2d(43, 22), Math.toRadians(0));
+                .strafeToSplineHeading(new Vector2d(43, 23), Math.toRadians(0));
 
 
         TrajectoryActionBuilder PrepSecondScore = drive.actionBuilder(prepSecondScorePos)
                 .strafeToSplineHeading(new Vector2d(45, 45), Math.toRadians(50));
 
         TrajectoryActionBuilder SecondScore = drive.actionBuilder(SecondScorePos)
-                .strafeToSplineHeading(new Vector2d(55, 50), Math.toRadians(50));
+                .strafeToSplineHeading(new Vector2d(54, 50), Math.toRadians(50));
 
 
         TrajectoryActionBuilder Finish = drive.actionBuilder(finishPos)
@@ -95,27 +95,27 @@ public class OfficialBlueLeftAuto extends LinearOpMode {
 
 
         TrajectoryActionBuilder GrabThird = drive.actionBuilder(grabThirdPos)
-                .strafeToSplineHeading(new Vector2d(38, 22), Math.toRadians(0));
+                .strafeToSplineHeading(new Vector2d(38, 23), Math.toRadians(0));
         TrajectoryActionBuilder PickThirdFinish = drive.actionBuilder(grabThirdFinishPos)
                 //.strafeToSplineHeading(new Vector2d(35, 37), Math.toRadians(0))
                 //TrajectoryActionBuilder PickFirstFinish = drive.actionBuilder(pickFirstFinishPos)
                 //.strafeTo(new Vector2d(35, 25));
-                .strafeToSplineHeading(new Vector2d(49, 22), Math.toRadians(0));
+                .strafeToSplineHeading(new Vector2d(49, 23), Math.toRadians(0));
 
 
         TrajectoryActionBuilder PrepThirdScore = drive.actionBuilder(prepThirdScorePos)
                 .strafeToSplineHeading(new Vector2d(45, 45), Math.toRadians(50));
 
         TrajectoryActionBuilder ThirdScore = drive.actionBuilder(ThirdScorePos)
-                .strafeToSplineHeading(new Vector2d(55, 50), Math.toRadians(50));
+                .strafeToSplineHeading(new Vector2d(54, 50), Math.toRadians(50));
 
         TrajectoryActionBuilder PickFourth = drive.actionBuilder(pickFourthPos)
-                .strafeToSplineHeading(new Vector2d(52, 22), Math.toRadians(0));
+                .strafeToSplineHeading(new Vector2d(52, 23), Math.toRadians(0));
         TrajectoryActionBuilder PickFourthFinish = drive.actionBuilder(pickFourthFinishPos)
-                .strafeToSplineHeading(new Vector2d(57, 22), Math.toRadians(0));
+                .strafeToSplineHeading(new Vector2d(57, 23), Math.toRadians(0));
 
         TrajectoryActionBuilder FourthScore = drive.actionBuilder(FourthScorePos)
-                .strafeToSplineHeading(new Vector2d(55, 50), Math.toRadians(50));
+                .strafeToSplineHeading(new Vector2d(54, 50), Math.toRadians(50));
 
         TrajectoryActionBuilder WaitScore = drive.actionBuilder(initialPose)
                 .waitSeconds(0.4);
